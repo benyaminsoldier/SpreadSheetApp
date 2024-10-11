@@ -28,22 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            _menuStrip = new GroupBox();
+            _menuBox = new GroupBox();
             _btnOpen = new Button();
             _btnNew = new Button();
-            _menuStrip.SuspendLayout();
+            _menuBox.SuspendLayout();
             SuspendLayout();
             // 
-            // _menuStrip
+            // _menuBox
             // 
-            _menuStrip.Controls.Add(_btnOpen);
-            _menuStrip.Controls.Add(_btnNew);
-            _menuStrip.Location = new Point(12, 12);
-            _menuStrip.Name = "_menuStrip";
-            _menuStrip.Size = new Size(300, 542);
-            _menuStrip.TabIndex = 0;
-            _menuStrip.TabStop = false;
-            _menuStrip.Text = "Menu";
+            _menuBox.Controls.Add(_btnOpen);
+            _menuBox.Controls.Add(_btnNew);
+            _menuBox.Location = new Point(12, 12);
+            _menuBox.Name = "_menuBox";
+            _menuBox.Size = new Size(300, 542);
+            _menuBox.TabIndex = 0;
+            _menuBox.TabStop = false;
+            _menuBox.Text = "Menu";
             // 
             // _btnOpen
             // 
@@ -70,16 +70,16 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1284, 566);
-            Controls.Add(_menuStrip);
+            Controls.Add(_menuBox);
             Name = "SpreadsheetApp";
             Text = "Excel";
-            _menuStrip.ResumeLayout(false);
+            _menuBox.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private GroupBox _menuStrip;
+        private GroupBox _menuBox;
         private Button _btnOpen;
         private Button _btnNew;
     }

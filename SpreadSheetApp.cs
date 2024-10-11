@@ -4,7 +4,7 @@ namespace spreadsheetApp
     {
         string filePath;
         static int _documentsCount;
-        public Document Document { get; set; }
+        
         public List<Document> Documents { get; set; }
 
         public SpreadsheetApp()
