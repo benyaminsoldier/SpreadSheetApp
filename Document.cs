@@ -14,7 +14,7 @@ namespace spreadsheetApp
     public partial class Document : Form
     {
 
-        public string Name { get; set; }
+        
         public DateTime OriginDate { get; set; }
         public DateTime LastModificationDate { get; set; }
 
@@ -76,7 +76,7 @@ namespace spreadsheetApp
         {
             DataTable Table = new DataTable("sheet 1");
             DataColumn Column;
-            DataRow Row;
+
             string columnName = "";
 
             for (int i = 1; i < columns; i++)
