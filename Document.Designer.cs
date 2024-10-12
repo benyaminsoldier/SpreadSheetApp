@@ -113,19 +113,19 @@
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(54, 29);
+            fileToolStripMenuItem.Size = new Size(46, 24);
             fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(188, 34);
+            newToolStripMenuItem.Size = new Size(152, 26);
             newToolStripMenuItem.Text = "New";
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(188, 34);
+            openToolStripMenuItem.Size = new Size(152, 26);
             openToolStripMenuItem.Text = "Open";
             // 
             // saveToolStripMenuItem
@@ -137,7 +137,7 @@
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(188, 34);
+            saveAsToolStripMenuItem.Size = new Size(152, 26);
             saveAsToolStripMenuItem.Text = "Save As...";
             // 
             // printToolStripMenuItem
@@ -149,9 +149,9 @@
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(188, 34);
+            exitToolStripMenuItem.Size = new Size(152, 26);
             exitToolStripMenuItem.Text = "Exit";
-            // 
+            //
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.Controls.Add(btnSheet);
@@ -173,15 +173,12 @@
             // 
             // sheet1
             // 
-            
-            // 
             // Document
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(939, 450);
             Controls.Add(flowLayoutPanel1);
-            
             Controls.Add(toolBar);
             Controls.Add(menuBar);
             Name = "Document";
@@ -192,7 +189,6 @@
             menuBar.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
-            
             ResumeLayout(false);
             PerformLayout();
         }
