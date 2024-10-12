@@ -4,14 +4,16 @@ namespace spreadsheetApp
     {
         string filePath;
         static int _documentsCount;
-        
-        public List<Document> Documents { get; set; }
+        public Document CurrentFile { get; set; }
+        public List<Document> Files { get; set; }
 
         public SpreadsheetApp()
         {
+            filePath = "C://";
+            _documentsCount = 0;
             InitializeComponent();
             _documentsCount++;
-            Documents = new List<Document>();
+            Files = new List<Document>();
         }
 
 
@@ -19,8 +21,11 @@ namespace spreadsheetApp
         private void _btnNew_Click(object sender, EventArgs e)
         {
             
-            Document newDocument = new Document() {Name = "calculation_sheet" };
-            Documents.Add(newDocument);
+            Document newDocument = new Document() {
+                Name = "calculation_sheet" ,
+                FilePath = filePath
+            };
+            Files.Add(newDocument);
             newDocument.Display();
             // filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
 

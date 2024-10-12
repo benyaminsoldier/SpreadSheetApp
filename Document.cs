@@ -13,7 +13,7 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
-
+        public string FilePath { get;  set; }
         
         public DateTime OriginDate { get; set; }
         public DateTime LastModificationDate { get; set; }
@@ -27,7 +27,7 @@ namespace spreadsheetApp
 
         public Document()
         {
-            
+
             CurrentDataTable = CreateEmptyTable();
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
