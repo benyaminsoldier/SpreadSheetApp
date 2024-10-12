@@ -12,11 +12,14 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
-        public int numOfRows { get; set; } = 11;
-        public int numOfColumns { get; set; } = 11;
+        public string name {  get; set; }
+        public int numOfRows { get; set; }
+        public int numOfColumns { get; set; }
+        //public Document(string name, int numOfRows, int numOfColumns)
         public Document()
         {
             InitializeComponent();
+            //CreateGrid(numOfRows, numOfColumns);
             CreateGrid();
         }
         public void Display()
@@ -58,7 +61,7 @@ namespace spreadsheetApp
             //dataGrid.Columns[].Width = 20;
             //dataGrid.AllowUserToAddRows = false; // a new row is added by default.
 
-            //dataGrid.Columns[0].Frozen = true; // freezing the first column is not working, further investigation.
+            dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
             //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
         }
