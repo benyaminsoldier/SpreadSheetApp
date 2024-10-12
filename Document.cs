@@ -13,22 +13,24 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
+        public string FileName { get; set; } = "";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
-
         public string FilePath { get;  set; }
-        
         public DateTime OriginDate { get; set; }
         public DateTime LastModificationDate { get; set; }
-
         public List<DataTable> DataTables { get; set; }
         public List<DataGridView> Layouts { get; set; }
         public DataGridView CurrentLayout { get; set; }
-
         public DataTable CurrentDataTable { get; set; }
 
-        public Document()
+        public Document(string name, int numOfRows, int numOfColumns, string filePath)
         {
+            FileName = name;
+            NumOfRows = numOfRows;
+            NumOfColumns = numOfColumns;
+            FilePath = filePath;
+
             CurrentDataTable = CreateEmptyTable();
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
@@ -70,20 +72,17 @@ namespace spreadsheetApp
         }
 
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
-        private DataTable CreateEmptyTable(int columns=200, int rows=200)
+        private DataTable CreateEmptyTable() // just emptied the arguments, we can access the props straightforward.
         {
             DataTable Table = new DataTable("sheet 1");
             DataColumn Column;
-
             string columnName = "";
-
-            for (int i = 1; i < columns; i++)
+            for (int i = 1; i < NumOfColumns; i++)
             {
                 if (i <= 26)
                 {
-                    // First 26 columns are just A-Z
-
-                    columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z
+                    // First 26 columns are just A-Z.
+                    columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
                     Column = new DataColumn(columnName);
                 }
                 else
@@ -91,30 +90,22 @@ namespace spreadsheetApp
                     // For columns beyond Z (i.e., AA, AB, etc.)
                     int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
                     int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
-
                     // Combine the prefix and suffix to get AA, AB, etc.
                     columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
                     Column = new DataColumn(columnName);
                 }
-
                 Column.DataType = typeof(string);
                 Column.AllowDBNull = true;
                 Column.DefaultValue = "";
                 Column.MaxLength = 255;
-                
                 Table.Columns.Add(Column);
             }
-
-            for(int j=0; j<rows; j++)
+            for (int j = 0; j < NumOfRows; j++)
             {
                 Table.Rows.Add(Table.NewRow());
-                
-
             }
-
             return Table;
         }
-
 
         private void DisplayLayout(DataGridView sheet)
         {
@@ -128,42 +119,42 @@ namespace spreadsheetApp
         }
 
         // adding columns and rows according to user input.
-        public void CreateGrid ()
-        {
-            DataGridView dataGrid = new DataGridView(); // creating a datagrid.
-            dataGrid.Size = new Size(1000, 300); // setting its size.
-            dataGrid.Location = new Point(0, 60); // setting its location.
+        //public void CreateGrid ()
+        //{
+        //    DataGridView dataGrid = new DataGridView(); // creating a datagrid.
+        //    dataGrid.Size = new Size(1000, 300); // setting its size.
+        //    dataGrid.Location = new Point(0, 60); // setting its location.
 
-            DataTable dataTable = new DataTable(); // creating a datatable will make our life easier later on.
+        //    DataTable dataTable = new DataTable(); // creating a datatable will make our life easier later on.
 
-            // adding columns to our table. First column act as rows header.
-            dataTable.Columns.Add("*"); 
-            dataTable.Columns.Add("A");
-            dataTable.Columns.Add("B");
-            dataTable.Columns.Add("C");
-            dataTable.Columns.Add("D");
+        //    // adding columns to our table. First column act as rows header.
+        //    dataTable.Columns.Add("*"); 
+        //    dataTable.Columns.Add("A");
+        //    dataTable.Columns.Add("B");
+        //    dataTable.Columns.Add("C");
+        //    dataTable.Columns.Add("D");
 
-            // adding rows to the DataTable.
-            dataTable.Rows.Add("1");
-            dataTable.Rows.Add("2");
-            dataTable.Rows.Add("3");
-            dataTable.Rows.Add("4");
-            dataTable.Rows.Add("5");
-            dataTable.Rows.Add("6");
-            dataTable.Rows.Add("7");
-            dataTable.Rows.Add("8");
+        //    // adding rows to the DataTable.
+        //    dataTable.Rows.Add("1");
+        //    dataTable.Rows.Add("2");
+        //    dataTable.Rows.Add("3");
+        //    dataTable.Rows.Add("4");
+        //    dataTable.Rows.Add("5");
+        //    dataTable.Rows.Add("6");
+        //    dataTable.Rows.Add("7");
+        //    dataTable.Rows.Add("8");
 
-            dataGrid.DataSource = dataTable; // attaching datatable to the datagrid.
-            this.Controls.Add(dataGrid); // adding grid to list of controls.
+        //    dataGrid.DataSource = dataTable; // attaching datatable to the datagrid.
+        //    this.Controls.Add(dataGrid); // adding grid to list of controls.
 
-            dataGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // centering the values.
-            dataGrid.RowHeadersVisible = false; // removing first column so the next one will act as row headers.
-            //dataGrid.Columns[].Width = 20;
-            //dataGrid.AllowUserToAddRows = false; // a new row is added by default.
+        //    dataGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // centering the values.
+        //    dataGrid.RowHeadersVisible = false; // removing first column so the next one will act as row headers.
+        //    //dataGrid.Columns[].Width = 20;
+        //    //dataGrid.AllowUserToAddRows = false; // a new row is added by default.
 
-            dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
-            //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
-            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
-        }
+        //    dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
+        //    //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
+        //    dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
+        //}
     }
 }
