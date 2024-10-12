@@ -32,10 +32,12 @@ namespace spreadsheetApp
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
             Layouts = new List<DataGridView>() { CurrentLayout };
-   
-
+            DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
+
+
+        // ---------------------------------------------- LAYOUTLOGIC GUI LOGIC DATAGRIDVIEW ----------------------------------------
         private DataGridView CreateLayoutFrom(DataTable table)
         {
             DataGridView Sheet = new DataGridView();
@@ -66,12 +68,14 @@ namespace spreadsheetApp
             
             ((System.ComponentModel.ISupportInitialize)Sheet).EndInit();
             Sheet.DataSource = table;
-            Controls.Add(Sheet);
+            
 
 
             return Sheet;
         }
 
+
+        // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
         private DataTable CreateEmptyTable(int columns=200, int rows=200)
         {
             DataTable Table = new DataTable("sheet 1");
@@ -122,9 +126,10 @@ namespace spreadsheetApp
         }
 
 
-        private void DisplayLayout()
+        private void DisplayLayout(DataGridView sheet)
         {
-
+            Controls.Add(sheet);
+            sheet.Focus();
         }
 
         public void Display()
