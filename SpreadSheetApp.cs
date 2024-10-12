@@ -20,8 +20,10 @@ namespace spreadsheetApp
 
         private void _btnNew_Click(object sender, EventArgs e)
         {
+            int x = 200;
+            int y = 200;
             
-            Document newDocument = new Document() {
+            Document newDocument = new Document(x,y) {
                 Name = "calculation_sheet" ,
                 FilePath = filePath
             };

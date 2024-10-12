@@ -25,10 +25,10 @@ namespace spreadsheetApp
         public DataTable CurrentDataTable { get; set; }
 
 
-        public Document()
+        public Document(int rows, int columns)
         {
 
-            CurrentDataTable = CreateEmptyTable();
+            CurrentDataTable = CreateEmptyTable(rows,  columns);
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
             Layouts = new List<DataGridView>() { CurrentLayout };
