@@ -32,21 +32,41 @@ namespace spreadsheetApp
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
             Layouts = new List<DataGridView>() { CurrentLayout };
+   
+
             InitializeComponent();
         }
         private DataGridView CreateLayoutFrom(DataTable table)
         {
             DataGridView Sheet = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)Sheet).BeginInit();
-            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            Sheet.Name = "sheet1";
-            Sheet.RowHeadersWidth = 62;
+            
+            Sheet.Name = "sheet1";           
             Sheet.TabIndex = 14;
             Sheet.Dock = DockStyle.Fill;
+            Sheet.BackgroundColor = Color.White;
+            Sheet.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            
+
+            Sheet.EnableHeadersVisualStyles = false;
+            Sheet.RowHeadersWidth = 60;
+            
+            Sheet.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;           
+            Sheet.ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
+            Sheet.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            Sheet.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+            Sheet.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            Sheet.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            
+           
+            Sheet.AllowUserToDeleteRows = true;
+            Sheet.AllowUserToAddRows = true;
+            Sheet.AllowUserToResizeColumns = true;
+            
             ((System.ComponentModel.ISupportInitialize)Sheet).EndInit();
             Sheet.DataSource = table;
             Controls.Add(Sheet);
-
 
 
             return Sheet;
@@ -55,7 +75,8 @@ namespace spreadsheetApp
         private DataTable CreateEmptyTable(int columns=200, int rows=200)
         {
             DataTable Table = new DataTable("sheet 1");
-            DataColumn _column;
+            DataColumn Column;
+            DataRow Row;
             string columnName = "";
 
             for (int i = 1; i < columns; i++)
@@ -65,7 +86,7 @@ namespace spreadsheetApp
                     // First 26 columns are just A-Z
 
                     columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z
-                    _column = new DataColumn(columnName);
+                    Column = new DataColumn(columnName);
                 }
                 else
                 {
@@ -75,19 +96,28 @@ namespace spreadsheetApp
 
                     // Combine the prefix and suffix to get AA, AB, etc.
                     columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
-                    _column = new DataColumn(columnName);
+                    Column = new DataColumn(columnName);
                 }
 
 
-                _column.DataType = typeof(string);
-                _column.AllowDBNull = true;
-                _column.DefaultValue = "";
-                _column.MaxLength = 255;
+                Column.DataType = typeof(string);
+                Column.AllowDBNull = true;
+                Column.DefaultValue = "";
+                Column.MaxLength = 255;
 
             
 
-                Table.Columns.Add(_column);
+                Table.Columns.Add(Column);
             }
+
+            for(int j=0; j<rows; j++)
+
+            {
+                Table.Rows.Add(Table.NewRow());
+                
+
+            }
+
             return Table;
         }
 
