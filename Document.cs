@@ -13,6 +13,9 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
+        public int NumOfRows { get; set; }
+        public int NumOfColumns { get; set; }
+
         public string FilePath { get;  set; }
         
         public DateTime OriginDate { get; set; }
@@ -24,10 +27,8 @@ namespace spreadsheetApp
 
         public DataTable CurrentDataTable { get; set; }
 
-
         public Document()
         {
-
             CurrentDataTable = CreateEmptyTable();
             DataTables = new List<DataTable>() { CurrentDataTable };
             CurrentLayout = CreateLayoutFrom(CurrentDataTable);
@@ -35,8 +36,6 @@ namespace spreadsheetApp
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
-
-
         // ---------------------------------------------- LAYOUTLOGIC GUI LOGIC DATAGRIDVIEW ----------------------------------------
         private DataGridView CreateLayoutFrom(DataTable table)
         {
@@ -49,7 +48,6 @@ namespace spreadsheetApp
             Sheet.BackgroundColor = Color.White;
             Sheet.CellBorderStyle = DataGridViewCellBorderStyle.Single;
             
-
             Sheet.EnableHeadersVisualStyles = false;
             Sheet.RowHeadersWidth = 60;
             
@@ -60,20 +58,16 @@ namespace spreadsheetApp
             Sheet.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
             Sheet.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             Sheet.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            
-           
+
             Sheet.AllowUserToDeleteRows = true;
             Sheet.AllowUserToAddRows = true;
             Sheet.AllowUserToResizeColumns = true;
             
             ((System.ComponentModel.ISupportInitialize)Sheet).EndInit();
             Sheet.DataSource = table;
-            
-
 
             return Sheet;
         }
-
 
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
         private DataTable CreateEmptyTable(int columns=200, int rows=200)
@@ -103,19 +97,15 @@ namespace spreadsheetApp
                     Column = new DataColumn(columnName);
                 }
 
-
                 Column.DataType = typeof(string);
                 Column.AllowDBNull = true;
                 Column.DefaultValue = "";
                 Column.MaxLength = 255;
-
-            
-
+                
                 Table.Columns.Add(Column);
             }
 
             for(int j=0; j<rows; j++)
-
             {
                 Table.Rows.Add(Table.NewRow());
                 
@@ -137,6 +127,43 @@ namespace spreadsheetApp
             this.Show();
         }
 
- 
+        // adding columns and rows according to user input.
+        public void CreateGrid ()
+        {
+            DataGridView dataGrid = new DataGridView(); // creating a datagrid.
+            dataGrid.Size = new Size(1000, 300); // setting its size.
+            dataGrid.Location = new Point(0, 60); // setting its location.
+
+            DataTable dataTable = new DataTable(); // creating a datatable will make our life easier later on.
+
+            // adding columns to our table. First column act as rows header.
+            dataTable.Columns.Add("*"); 
+            dataTable.Columns.Add("A");
+            dataTable.Columns.Add("B");
+            dataTable.Columns.Add("C");
+            dataTable.Columns.Add("D");
+
+            // adding rows to the DataTable.
+            dataTable.Rows.Add("1");
+            dataTable.Rows.Add("2");
+            dataTable.Rows.Add("3");
+            dataTable.Rows.Add("4");
+            dataTable.Rows.Add("5");
+            dataTable.Rows.Add("6");
+            dataTable.Rows.Add("7");
+            dataTable.Rows.Add("8");
+
+            dataGrid.DataSource = dataTable; // attaching datatable to the datagrid.
+            this.Controls.Add(dataGrid); // adding grid to list of controls.
+
+            dataGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // centering the values.
+            dataGrid.RowHeadersVisible = false; // removing first column so the next one will act as row headers.
+            //dataGrid.Columns[].Width = 20;
+            //dataGrid.AllowUserToAddRows = false; // a new row is added by default.
+
+            dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
+            //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
+            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
+        }
     }
 }
