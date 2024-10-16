@@ -15,26 +15,31 @@ namespace spreadsheetApp
             filePath = "C://";
             _documentsCount = 0;
             InitializeComponent();
-            _documentsCount++;
             Files = new List<Document>();
         }
         private void _btnNew_Click(object sender, EventArgs e)
         {
+
             //PopupForm popup = new PopupForm(); // to ask the user how many rows and columns and if he wants to name the sheet.
             //popup.ShowDialog(); // This will block input to the main form until the popup is closed
             
             //Form popUpWindow = new Form(); 
             //popUpWindow.ShowDialog();
+            //if(popOutWind.ShowDialog() == DialogResult.OK)
             //string name = "Doc1";
             //int numOfRows = 5;
             //int numOfColumns = 5;
             //Document newDocument = new Document(name, numOfRows, numOfColumns);
+
+            //from the popout iwndow we take the name num of rows and columns and pass em to the Document constructo
+            //So this way the popout window would just be collection the user infor and passin it again to the app.
             Document newDocument = new Document() {
                 Name = "calculation_sheet" ,
                 FilePath = filePath
             };
             Files.Add(newDocument);
             newDocument.Display();
+            _documentsCount++;
             // filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
         }
         
