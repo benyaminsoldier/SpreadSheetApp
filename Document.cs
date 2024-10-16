@@ -38,6 +38,15 @@ namespace spreadsheetApp
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
+        public Document(string name, int cols, int rows)
+        {
+            CurrentDataTable = CreateEmptyTable();
+            DataTables = new List<DataTable>() { CurrentDataTable };
+            CurrentLayout = CreateLayoutFrom(CurrentDataTable);
+            Layouts = new List<DataGridView>() { CurrentLayout };
+            DisplayLayout(CurrentLayout);
+            InitializeComponent();
+        }
         // ---------------------------------------------- LAYOUTLOGIC GUI LOGIC DATAGRIDVIEW ----------------------------------------
         private DataGridView CreateLayoutFrom(DataTable table)
         {
@@ -115,7 +124,7 @@ namespace spreadsheetApp
 
         public void Display()
         {
-            this.Show();
+            this.ShowDialog();
         }
 
         // adding columns and rows according to user input.
