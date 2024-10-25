@@ -20,6 +20,7 @@ namespace spreadsheetApp
         private void _btnNew_Click(object sender, EventArgs e)
         {
 
+
             //PopupForm popup = new PopupForm(); // to ask the user how many rows and columns and if he wants to name the sheet.
             //popup.ShowDialog(); // This will block input to the main form until the popup is closed
             PopUpForm popup = new PopUpForm(); // to ask the user how many rows and columns and if he wants to name the sheet.
@@ -36,14 +37,17 @@ namespace spreadsheetApp
 
             //from the popout iwndow we take the name num of rows and columns and pass em to the Document constructo
             //So this way the popout window would just be collection the user infor and passin it again to the app.
-            /*Document newDocument = new Document() {
+            /*
+            Document newDocument = new Document() {
                 Name = "calculation_sheet" ,
                 FilePath = filePath
             };
             Files.Add(newDocument);
             newDocument.Display();
-            _documentsCount++;*/
+            _documentsCount++;
+            */
             // filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
+            
             //Document newDocument = new Document() {
             //    Name = "calculation_sheet" ,
             //    FilePath = filePath
@@ -51,6 +55,7 @@ namespace spreadsheetApp
             //Files.Add(newDocument);
             //newDocument.Display();
             //// filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
+
         }
         
         private void _btnOpen_Click(object sender, EventArgs e)
