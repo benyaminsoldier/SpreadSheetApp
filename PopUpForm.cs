@@ -29,7 +29,7 @@ namespace spreadsheetApp
             Document newDocument = new Document(docName, rows, cols, filePath);
             Files.Add(newDocument);
             newDocument.Display();
-            this.Close(); // popup is closed when document is created.
+            //this.Close(); // popup is closed when document is created.
             // filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
         }
     }
