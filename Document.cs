@@ -29,8 +29,8 @@ namespace spreadsheetApp
         public Document(string name, int numOfRows, int numOfColumns, string filePath)
         {
             FileName = name;
-            NumOfRows = numOfRows;
-            NumOfColumns = numOfColumns;
+            NumOfRows = numOfRows - 1;
+            NumOfColumns = numOfColumns + 1;
             FilePath = filePath;
 
             CurrentDataTable = CreateEmptyTable();
@@ -99,9 +99,14 @@ namespace spreadsheetApp
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
         private DataTable CreateEmptyTable() // just emptied the arguments, we can access the props straightforward.
         {
-            DataTable table = new DataTable("sheet 1");
-            table = AddColumnHeaderToTable(table);
-            return table;
+            DataTable Table = new DataTable("sheet 1");
+            Table = AddColumnHeaderToTable(Table);
+            // Adding the rest of the rows
+            for (int j = 0; j < NumOfRows; j++)
+            {
+                Table.Rows.Add(Table.NewRow());
+            }
+            return Table;
         }
         private DataTable AddColumnHeaderToTable(DataTable table)
         {
