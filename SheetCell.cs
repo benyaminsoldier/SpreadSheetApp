@@ -6,10 +6,10 @@
         {
             Style.SelectionBackColor = Color.Wheat;
         }
-        public void SetValue(object sender, DataGridViewCellEventArgs cell)
+        public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
-            SheetCell editedCell = (SheetCell)DataGridView.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
-            string exp = (string)editedCell.Value;
+            
+            string exp = cell.FormattedValue as string;
             
             try
             {
@@ -21,16 +21,25 @@
                 {
                     
                     int indexOfError = Array.IndexOf(exp.ToCharArray(), ife.InvalidChar);
+
                     if (indexOfError != -1)
                     {
-                        var cellTxt = this.AccessibilityObject;
+                        var editedCell = this.DataGridView.CurrentCell;
+                        this.DataGridView.BeginEdit(true); //Allows us to programmatically edit the cell textbox.
+                        TextBox txtBox = this.DataGridView.EditingControl as TextBox;
+                        txtBox.SelectionStart = indexOfError;
+                        txtBox.SelectionLength = 1;
+                        txtBox.Focus();
+                        cell.Cancel = true;
                     }
                 }
+                
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
+        
   
 
         }
@@ -41,10 +50,11 @@
 
             exp = exp.Trim();
 
-            if (exp.StartsWith("="))
+            if (exp.StartsWith("=") || exp.StartsWith("+") || exp.StartsWith("-"))
             {
-                if (exp.Length > 1) exp = exp.Substring(1);
-                return ExpressionProcessor.ProcessCommand(exp);
+                if (exp.Length > 2) exp = exp.Substring(1);
+                else return exp.Substring(1);
+                return ExpressionProcessor.ProcessCommand(exp);               
             }
             else return exp;
         }

@@ -77,7 +77,7 @@ namespace spreadsheetApp
                 }
             };
 
-            CellEndEdit += (sender, cell) =>
+            CellValidating += (sender, cell) =>
             {
                 DataGridView grid = sender as DataGridView;
                 SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
@@ -85,6 +85,8 @@ namespace spreadsheetApp
 
                 //Updating source
                 source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
+
+                //How to update the cell format so it can be saved n loaded with the cells values???
 
             };
         }

@@ -239,8 +239,14 @@ namespace spreadsheetApp
             char[] expArr = input.ToCharArray();
             string substrng = "";
             int numero = 0;
-            if (!_validateParentheses(expArr)) throw new Exception("Please close parentheses properly");
-            if (!_validateOperators(expArr)) throw new InvalidFormulaException("This calculator only add,substracts, multiplies and divides",_getInvalidOperators(expArr));
+            if (!_validateParentheses(expArr)) 
+                throw new Exception("Please close parentheses properly");
+            if (!_validateOperators(expArr))
+            {
+                var ic = _getInvalidOperators(expArr);
+                throw new InvalidFormulaException("This calculator only add,substracts, multiplies and divides", ic);
+            }
+               
            
 
             for (int i = 0; i < expArr.Length;)
@@ -594,9 +600,13 @@ namespace spreadsheetApp
                 string result = $"{ExpressionProcessor.ExecutePostfix(postfixOutput)}";
                 return result;
             }
+            catch (InvalidFormulaException ife)
+            {
+                throw ife;
+            }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw e;
             }
         }
     }
