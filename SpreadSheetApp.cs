@@ -96,37 +96,15 @@ namespace spreadsheetApp
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }
-                            
-                            
-                            //this.Close();
-                            //foreach (var Row in sheetData)
-                            //{
-                            //    foreach(var Cell in Row)
-                            //    {
-
-                            //    }
-                            //}
-                            //for (int i = 0; i < numOfRows; i++)
-                            //{
-                            //    for (int j = 0; j < numOfColumns; j++)
-                            //    {
-                            //    }
-                            //}
-
                         }
-                        
 
                         // USING NPOI PACKAGE
-
                         //File Manager Class Used
                         //FileManager Class could implement ISave and IOpen interface
                         //ISave saveFile() will be implemented by child classes
                         //JsonFileManager or XlsxFileManager implement ISave/IOpen
                         //Xlsx uses OpenXML or NPOI Library.
                         //}
-                    } else
-                    {
-                        this.Close();
                     }
                 }
             }

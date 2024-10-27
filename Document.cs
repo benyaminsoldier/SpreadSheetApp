@@ -18,7 +18,7 @@ namespace spreadsheetApp
         public string FileName { get; set; } = "";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
-        public string FilePath { get;  set; }
+        public string FilePath { get; set; }
         public DateTime OriginDate { get; set; }
         public DateTime LastModificationDate { get; set; }
         public List<DataTable> DataTables { get; set; }
@@ -68,18 +68,18 @@ namespace spreadsheetApp
         {
             DataGridView Sheet = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)Sheet).BeginInit();
-            
-            Sheet.Name = "sheet1";           
+
+            Sheet.Name = "sheet1";
             Sheet.TabIndex = 14;
             Sheet.Dock = DockStyle.Fill;
             Sheet.BackgroundColor = System.Drawing.Color.White;
             Sheet.CellBorderStyle = DataGridViewCellBorderStyle.Single;
-            
+
             Sheet.EnableHeadersVisualStyles = false;
             Sheet.RowHeadersWidth = 60;
-            
+
             Sheet.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;           
+            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             Sheet.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(System.Drawing.FontFamily.GenericSansSerif, 8, FontStyle.Regular);
             Sheet.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             Sheet.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
@@ -89,7 +89,7 @@ namespace spreadsheetApp
             Sheet.AllowUserToDeleteRows = true;
             Sheet.AllowUserToAddRows = true;
             Sheet.AllowUserToResizeColumns = true;
-            
+
             ((System.ComponentModel.ISupportInitialize)Sheet).EndInit();
             Sheet.DataSource = table;
 
@@ -158,7 +158,7 @@ namespace spreadsheetApp
                     string cellValue = GetCellValue(workbookPart, cell);
                     if (columnIndex < tableToFill.Columns.Count)
                     {
-                       dataRow[columnIndex] = cellValue;
+                        dataRow[columnIndex] = cellValue;
                     }
                     columnIndex++;
                 }
@@ -192,6 +192,48 @@ namespace spreadsheetApp
         public void Display()
         {
             this.ShowDialog();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "";
+                //sfd.Filter = "Excel|*.xlsx";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    // USING OPENXML
+                    using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                    {
+                        WorkbookPart workbookPart = doc.AddWorkbookPart();
+                        workbookPart.Workbook = new Workbook();
+                        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                        worksheetPart.Worksheet = new Worksheet(new SheetData());
+                        Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                        Sheet sheet = new Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                        sheets.Append(sheet);
+                        SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                        // Write DataTable rows
+                        foreach (DataRow dataRow in CurrentDataTable.Rows)
+                        {
+                            Row newRow = new Row();
+                            foreach (var item in dataRow.ItemArray)
+                            {
+                                Cell cell = new Cell
+                                {
+                                    DataType = CellValues.String,
+                                    CellValue = new CellValue(item.ToString())
+                                };
+                                newRow.AppendChild(cell);
+                            }
+                            sheetData.AppendChild(newRow);
+                        }
+                        workbookPart.Workbook.Save();
+                    }
+                }
+            }
         }
 
         // adding columns and rows according to user input.
