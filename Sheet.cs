@@ -14,74 +14,78 @@ namespace spreadsheetApp
         {
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
 
-            this.Name = source.Namespace;
-            this.TabIndex = 14;
-            this.Dock = DockStyle.Fill;
-            this.BackgroundColor = Color.White;
+            Name = source.Namespace;
+            TabIndex = 14;
+            Dock = DockStyle.Fill;
+            BackgroundColor = Color.White;
 
             //ALLOW USER
-            this.AllowUserToDeleteRows = true;
-            this.AllowUserToAddRows = true;
-            this.AllowUserToResizeColumns = true;
+            AllowUserToDeleteRows = true;
+            AllowUserToAddRows = true;
+            AllowUserToResizeColumns = true;
 
-            //HEADERS
-            this.EnableHeadersVisualStyles = false; // true prevents custom style on headers
+            // this shuts downs the default style.
+            EnableHeadersVisualStyles = false;
+
+            //COLUMN HEADERS - Default HeaderClass from Grid... needs inheritances for customization
+
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
+            ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+            ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
             //ROW HEADERS
-            this.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.RowHeadersDefaultCellStyle.BackColor = Color.Gray;
-            this.RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.RowHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            this.RowHeadersWidth = 60;
-            this.RowPostPaint += (object sender, DataGridViewRowPostPaintEventArgs e) => {
-                using (Brush sb = new SolidBrush(Color.Black))
-                {
-                    e.Graphics.DrawString($"{(e.RowIndex)}", new Font("Verdant", 10), sb, new PointF(e.RowBounds.X + 15, e.RowBounds.Y + 5));
-                }
-            };
-            //COLUMN HEADERS
-            this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
-            this.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
-            this.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
-            this.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            //CELLS
-            this.DefaultCellStyle.SelectionBackColor = Color.Wheat;
-            this.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            RowHeadersWidth = 50;
+            RowHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
 
             //Grid Generation
-            foreach (DataColumn column in source.Columns)
-            {
-                this.Columns.Add(new SheetColumn()
-                {
-                    HeaderText = column.ColumnName,
-                });
-            }
-            for (int row = 0; row < source.Rows.Count; row++)
-            {
-                this.Rows.Add(new SheetRow()); //adding custom row.
+            foreach (DataColumn column in source.Columns) Columns.Add(new SheetColumn() { HeaderText = column.ColumnName, });
 
-                // Populate cells in the row
-                for (int col = 0; col < source.Columns.Count; col++)
-                {
-                    // Use custom thisCell
-                    SheetCell cell = new SheetCell();
-                    cell.Value = source.Rows[row][col].ToString();
+            foreach (DataRow row in source.Rows) Rows.Add();
 
-                    // Assign custom cell to the DataGridView row
-                    this.Rows[row].Cells[col] = cell;
 
-                }
-            }
 
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
 
-            this.CellEndEdit += (object sender, DataGridViewCellEventArgs e) =>
+            // EVENTS
+
+            RowPostPaint += (sender, e) =>
+            {
+                using (Brush sb = new SolidBrush(Color.Black))
+                {
+                    int xOffSet = 15;
+                    if (e.RowIndex > 9) xOffSet = 10;
+                    e.Graphics.DrawString($"{e.RowIndex}", new Font("Verdant", 10), sb, new PointF(e.RowBounds.X + xOffSet, e.RowBounds.Y + 5));
+                }
+            };
+
+            ColumnHeaderMouseClick += (sender, e) =>
             {
                 DataGridView grid = sender as DataGridView;
-                SheetCell editedCell = (SheetCell)grid.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                editedCell.SetValue(grid, e);
+
+                // Check that a valid column index is clicked
+                if (e.ColumnIndex >= 0)
+                {
+                    grid.ClearSelection(); // Clear any existing selection
+                    foreach (DataGridViewRow row in grid.Rows)
+                    {
+                        row.Cells[e.ColumnIndex].Selected = true; // Select each cell in the clicked column
+                    }
+                }
+            };
+
+            CellEndEdit += (sender, cell) =>
+            {
+                DataGridView grid = sender as DataGridView;
+                SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
+                editedCell.SetValue(grid, cell);
+
+                //Updating source
+                source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
+
             };
         }
     }

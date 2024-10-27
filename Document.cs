@@ -30,10 +30,10 @@ public partial class Document : Form
             NumOfRows = numOfRows;
             NumOfColumns = numOfColumns;
             FilePath = filePath;
-
+            OriginDate = DateTime.Now;
+            LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(numOfRows, numOfColumns);
             CurrentLayout = new Sheet(CurrentDataTable);
-
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
