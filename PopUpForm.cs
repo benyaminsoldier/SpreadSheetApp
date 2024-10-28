@@ -12,25 +12,29 @@ namespace spreadsheetApp
 {
     public partial class PopUpForm : Form
     {
-        // just copied this property to the PopUp file because we're creating the file from this form.
-        // maybe there's a better way of doing?? but I just copied.
-        public Document CurrentFile { get; set; }
-        public List<Document> Files { get; set; } = new List<Document>();
-        public PopUpForm()
+        public Document.DocParams Params {  get; set; }
+   
+        public PopUpForm(Document.DocParams docParams)
         {
+            Params = docParams;
             InitializeComponent();
         }
         private void BtnCreateDoc_Click(object sender, EventArgs e)
         {
-            string docName = docNameInput.Text;
-            int rows = int.Parse(numOfRowsInput.Text);
-            int cols = int.Parse(numOfColsInput.Text);
-            string filePath = "C://";
-            Document newDocument = new Document(docName, rows, cols, filePath);
-            Files.Add(newDocument);
-            newDocument.Display();
-            this.Close(); // popup is closed when document is created.
-            // filePath = ""; How to pass filePath to Document so when it saves the path gets updated.
+            try
+            {
+                Params.Title = docNameInput.Text;
+                if (int.TryParse(numOfRowsInput.Text, out int rows)) Params.Rows = rows; else throw new Exception("Invalid number of rows.");
+                if (int.TryParse(numOfColsInput.Text, out int cols)) Params.Columns = cols; else throw new Exception("Invalid number of columns.");
+                DialogResult = DialogResult.OK;
+                this.Close(); // popup is closed when document is created.
+            }
+            catch (Exception ex) 
+            {
+                MessageBox.Show(ex.Message, "Invalid Parameters", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+            }
+
+           
         }
     }
 }
