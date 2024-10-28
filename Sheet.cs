@@ -46,8 +46,6 @@ namespace spreadsheetApp
 
             foreach (DataRow row in source.Rows) Rows.Add();
 
-
-
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
 
             // EVENTS
