@@ -15,11 +15,11 @@ namespace spreadsheetApp
 
             DataColumn Column;
             string columnName = "";
-            for (int i = 1; i < cols; i++)
+            for (int i = 0; i < cols; i++)
             {
                 if (i <= 26) {
                     Column = new DataColumn();
-                    Column.ColumnName = $"{(char)(i + 64)}"; 
+                    Column.ColumnName = $"{(char)(i + 65)}"; 
                 } // 'A' is 65 in ASCII, so adding 64 to get A-Z.
                 else
                 {
@@ -28,7 +28,7 @@ namespace spreadsheetApp
                     int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
                     // Combine the prefix and suffix to get AA, AB, etc.
                     Column = new DataColumn();
-                    Column.ColumnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
+                    Column.ColumnName = $"{(char)(quotient + 65)}{(char)(remainder + 65)}";
 
                 }
                 Column.DataType = typeof(string);

@@ -18,10 +18,11 @@ namespace spreadsheetApp
             TabIndex = 14;
             Dock = DockStyle.Fill;
             BackgroundColor = Color.White;
+            
 
             //ALLOW USER
-            AllowUserToDeleteRows = true;
-            AllowUserToAddRows = true;
+            AllowUserToDeleteRows = false;
+            AllowUserToAddRows = false;
             AllowUserToResizeColumns = true;
 
             // this shuts downs the default style.
@@ -37,26 +38,63 @@ namespace spreadsheetApp
             ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
             //ROW HEADERS
+            RowTemplate = new SheetRow();
             RowHeadersWidth = 50;
             RowHeadersDefaultCellStyle.BackColor = Color.LightGray;
             RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
 
             //Grid Generation
+            //Try block missed here to handle unmeasured user table sizes
+            
             foreach (DataColumn column in source.Columns) Columns.Add(new SheetColumn() { HeaderText = column.ColumnName, });
 
             foreach (DataRow row in source.Rows) Rows.Add();
-
+            
+            
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
 
             // EVENTS
 
+            CellValidating += (sender, cell) =>
+            {
+                DataGridView grid = sender as DataGridView;
+                SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
+                editedCell.SetValue(grid, cell);
+
+                //Updating source
+                source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
+
+                //How to update the cell format so it can be saved n loaded with the cells values???
+
+            };
+            CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); };
+
+    
+
+            CellPainting += (object sender, DataGridViewCellPaintingEventArgs e) =>
+            {      
+                
+                if (e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count && this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected)
+                {
+                    Rectangle cellRect = new Rectangle(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Width - 1, e.CellBounds.Height - 1);
+
+                    using (Pen pen = new Pen(Color.DarkOliveGreen,2f))
+                    {
+                        e.Graphics.DrawRectangle(pen,cellRect);
+                        e.Handled = true;
+                        
+                    }     
+                }
+                else e.Handled = false;
+            };
+
             RowPostPaint += (sender, e) =>
             {
                 using (Brush sb = new SolidBrush(Color.Black))
-                {
+                {                   
                     int xOffSet = 15;
                     if (e.RowIndex > 9) xOffSet = 10;
-                    e.Graphics.DrawString($"{e.RowIndex}", new Font("Verdant", 10), sb, new PointF(e.RowBounds.X + xOffSet, e.RowBounds.Y + 5));
+                    e.Graphics.DrawString($"{e.RowIndex+1}", new Font("Verdant", 10), sb, new PointF(e.RowBounds.X + xOffSet, e.RowBounds.Y + 5));
                 }
             };
 
@@ -75,18 +113,7 @@ namespace spreadsheetApp
                 }
             };
 
-            CellValidating += (sender, cell) =>
-            {
-                DataGridView grid = sender as DataGridView;
-                SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
-                editedCell.SetValue(grid, cell);
 
-                //Updating source
-                source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
-
-                //How to update the cell format so it can be saved n loaded with the cells values???
-
-            };
         }
     }
 }
