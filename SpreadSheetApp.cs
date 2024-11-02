@@ -19,7 +19,7 @@ namespace spreadsheetApp
         public SpreadsheetApp()
         {
             filePath = "";
-            _documentsCount = 0;
+            documentsCount = 0;
             InitializeComponent();
             Files = new List<Document>();   
             Params = new Document.DocParams();
@@ -34,19 +34,15 @@ namespace spreadsheetApp
                 Files.Add(newDocument);
                 newDocument.Display();
                 documentsCount++;
-                this.Hide();// we cannot close this form because the app will be close, so we're hiding it.
+                //this.Hide();// we cannot close this form because the app will be close, so we're hiding it.
             }            
         }
-        
-        
         private void _btnOpen_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(filePath))
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-
-
                     ofd.FileName = "";
                     //ofd.Filter = "Excel | (*.xlsx)";
                     if (ofd.ShowDialog() == DialogResult.OK)
@@ -59,7 +55,7 @@ namespace spreadsheetApp
                         using (SpreadsheetDocument doc = SpreadsheetDocument.Open(ofd.FileName, false))
                         {
                             WorkbookPart workbookPart = doc.WorkbookPart;
-                            Sheet sheet1 = workbookPart.Workbook.Descendants<Sheet>().First();
+                            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet1 = workbookPart.Workbook.Descendants<DocumentFormat.OpenXml.Spreadsheet.Sheet>().First();
                             WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet1.Id);
                             SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
                             NumOfRows = worksheetPart.Worksheet.Descendants<Row>().Count();
@@ -79,7 +75,7 @@ namespace spreadsheetApp
                             }
                             else
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols + 1, filePath, doc);
+                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols, filePath, doc);
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }

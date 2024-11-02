@@ -49,8 +49,8 @@ public partial class Document : Form
             FilePath = filePath;
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;            
-            //CurrentDataTable = new DataSource(numOfRows, numOfColumns);
-            CurrentDataTable = TransferDataToTable(fileToBeOpened);
+            CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
+            //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
             CurrentLayout = new Sheet(CurrentDataTable);
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
@@ -62,35 +62,65 @@ public partial class Document : Form
        
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
-        private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
-        {
-            DataTable tableToFill = new DataTable();
-            tableToFill = AddColumnHeaderToTable(tableToFill);
+        //private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
+        //{
+        //    DataTable tableToFill = new DataTable();
+        //    tableToFill = AddColumnHeaderToTable(tableToFill);
 
-            WorkbookPart workbookPart = openedFile.WorkbookPart;
-            Sheet sheet = workbookPart.Workbook.Sheets.Elements<Sheet>().FirstOrDefault();
-            WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
+        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
+        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
+        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
 
-            var rows = worksheetPart.Worksheet.Descendants<Row>();
+        //    var rows = worksheetPart.Worksheet.Descendants<Row>();
 
-            foreach (Row row in rows)
-            {
-                DataRow dataRow = tableToFill.NewRow();
-                int columnIndex = 0;
+        //    foreach (Row row in rows)
+        //    {
+        //        DataRow dataRow = tableToFill.NewRow();
+        //        int columnIndex = 0;
 
-                foreach (Cell cell in row.Descendants<Cell>())
-                {
-                    string cellValue = GetCellValue(workbookPart, cell);
-                    if (columnIndex < tableToFill.Columns.Count)
-                    {
-                        dataRow[columnIndex] = cellValue;
-                    }
-                    columnIndex++;
-                }
-                tableToFill.Rows.Add(dataRow);
-            }
-            return tableToFill;
-        }
+        //        foreach (Cell cell in row.Descendants<Cell>())
+        //        {
+        //            string cellValue = GetCellValue(workbookPart, cell);
+        //            if (columnIndex < tableToFill.Columns.Count)
+        //            {
+        //                dataRow[columnIndex] = cellValue;
+        //            }
+        //            columnIndex++;
+        //        }
+        //        tableToFill.Rows.Add(dataRow);
+        //    }
+        //    return tableToFill;
+        //}
+
+        //private DataTable AddColumnHeaderToTable(DataTable table)
+        //{
+        //    DataColumn Column;
+        //    string columnName = "";
+        //    for (int i = 1; i < NumOfColumns; i++)
+        //    {
+        //        if (i <= 26)
+        //        {
+        //            // First 26 columns are just A-Z.
+        //            columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
+        //            Column = new DataColumn(columnName);
+        //        }
+        //        else
+        //        {
+        //            // For columns beyond Z (i.e., AA, AB, etc.)
+        //            int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
+        //            int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
+        //            // Combine the prefix and suffix to get AA, AB, etc.
+        //            columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
+        //            Column = new DataColumn(columnName);
+        //        }
+        //        Column.DataType = typeof(string);
+        //        Column.AllowDBNull = true;
+        //        Column.DefaultValue = "";
+        //        Column.MaxLength = 255;
+        //        table.Columns.Add(Column);
+        //    }
+        //    return table;
+        //}
         private string GetCellValue(WorkbookPart workbookPart, Cell cell)
         {
             if (cell == null || cell.CellValue == null)
@@ -107,35 +137,15 @@ public partial class Document : Form
                 return cell.CellValue.InnerText;
             }
         }
-
-
         private void DisplayLayout(DataGridView sheet)
         {
             Controls.Add(sheet);
             sheet.Focus();
         }
-
         public void Display()
         {
             this.Show();
         }
-
-
-        public class DocParams
-        {
-            private string title;
-            private int rows;
-            private int columns;
-            public string Title { get => title; set => title = validateTitle(value); }
-            public int Rows { get => rows; set => rows = validateRows(value); }
-            public int Columns { get => columns; set => columns = validateCols(value); }
-            public DocParams()
-            {
-                title = "Document1";
-                rows = 12;
-                columns = 12;
-            }
-
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -153,12 +163,12 @@ public partial class Document : Form
                         WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                         worksheetPart.Worksheet = new Worksheet(new SheetData());
                         Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
-                        Sheet sheet = new Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                        DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
                         sheets.Append(sheet);
                         SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
 
                         // Write DataTable rows
-                        foreach (DataRow dataRow in CurrentDataTable.Rows)
+                        foreach (DataRow dataRow in this.CurrentDataTable.Rows)
                         {
                             Row newRow = new Row();
                             foreach (var item in dataRow.ItemArray)
@@ -177,8 +187,20 @@ public partial class Document : Form
                 }
             }
         }
-
-        
+        public class DocParams
+        {
+            private string title;
+            private int rows;
+            private int columns;
+            public string Title { get => title; set => title = validateTitle(value); }
+            public int Rows { get => rows; set => rows = validateRows(value); }
+            public int Columns { get => columns; set => columns = validateCols(value); }
+            public DocParams()
+            {
+                title = "Document1";
+                rows = 12;
+                columns = 12;
+            }
             private string validateTitle(string title)
             {
                 if (string.IsNullOrEmpty(title)) throw new Exception("Invalid document's title");
