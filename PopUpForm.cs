@@ -21,6 +21,7 @@ namespace spreadsheetApp
         }
         private void BtnCreateDoc_Click(object sender, EventArgs e)
         {
+
             try
             {
                 Params.Title = docNameInput.Text;
@@ -33,8 +34,6 @@ namespace spreadsheetApp
             {
                 MessageBox.Show(ex.Message, "Invalid Parameters", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
-
-           
         }
     }
 }
