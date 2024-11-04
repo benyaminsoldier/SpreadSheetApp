@@ -14,6 +14,7 @@
             try
             {
                 Value = ProccessExpression(exp);
+                this.DataGridView.InvalidateCell(this);
             }
             catch (InvalidFormulaException ife)
             {
