@@ -60,6 +60,7 @@ namespace spreadsheetApp
                 DataGridView grid = sender as DataGridView;
                 SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
                 editedCell.SetValue(grid, cell);
+                this.RefreshEdit(); 
 
                 //Updating source
                 source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
@@ -67,7 +68,7 @@ namespace spreadsheetApp
                 //How to update the cell format so it can be saved n loaded with the cells values???
 
             };
-            CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); };
+            //CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); };
 
     
 

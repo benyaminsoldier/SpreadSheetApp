@@ -163,7 +163,7 @@ namespace spreadsheetApp
         {
             foreach (var num in expArr)
             {
-                if (Operator.IsOperator(num) || char.IsDigit(num) || num == '(' || num == ')')
+                if (Operator.IsOperator(num) || char.IsDigit(num) || num == '(' || num == ')' || num == '.' || num == '.')
                 {
                     continue;
                 }
