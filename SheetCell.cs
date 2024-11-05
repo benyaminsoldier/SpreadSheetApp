@@ -1,12 +1,12 @@
-﻿namespace spreadsheetApp
+﻿using System.Runtime.CompilerServices;
+
+namespace spreadsheetApp
 {
     class SheetCell : DataGridViewTextBoxCell
     {
-        public SheetCell()
-        {
-            Style.SelectionBackColor = Color.Wheat;
-        }
-        public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
+
+
+            public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
             
             string exp = cell.FormattedValue as string;
