@@ -5,7 +5,7 @@ namespace spreadsheetApp
     class SheetCell : DataGridViewTextBoxCell
     {
 
-
+      
             public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
             
