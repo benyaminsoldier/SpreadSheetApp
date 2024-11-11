@@ -68,7 +68,7 @@ namespace spreadsheetApp
 
             CellValidating += (sender, cell) =>
             {
-                DataGridView grid = sender as DataGridView;
+                Sheet grid = sender as Sheet;
                 SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
                
                 editedCell.SetValue(grid, cell);
@@ -84,111 +84,51 @@ namespace spreadsheetApp
 
             //CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); };
 
-            CellPainting += ( sender, e) =>
+            CellPainting += (sender, e) =>
             {
-                //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                // For all regular cells within grid
-                bool cellWithinBounds = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count;
                 
-                if (cellWithinBounds)
+                SheetCell cellToBePainted;
+                bool cellIsWithinBounds = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count;
+
+                if (cellIsWithinBounds)
                 {
+                    
                     bool selectedCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected;
-                    using (SolidBrush stringBrush = new SolidBrush(this.ForeColor))
+
+                    if (selectedCell)
                     {
-                        using (SolidBrush backBrush = new SolidBrush(Color.White))
+                        cellToBePainted = this.Rows[e.RowIndex].Cells[e.ColumnIndex] as SheetCell;
+                        var cellToBePainted2 = cellToBePainted as DataGridViewTextBoxCell;
+
+                        if (cellToBePainted.IsFormatted )
                         {
-                            if (selectedCell)
-                            {
-
-
-                                using (Pen borderpen = new Pen(Color.DarkOliveGreen, 2))
-                                {
-                                    Rectangle rectDimensions = e.CellBounds;
-                                    rectDimensions.Width -= 1;
-                                    rectDimensions.Height -= 1;
-                                    rectDimensions.X = rectDimensions.X + 1;
-                                    rectDimensions.Y = rectDimensions.Y + 1;
-
-
-                                    e.Graphics.FillRectangle(backBrush, rectDimensions);
-
-                                    e.Graphics.DrawString(
-                                        e.FormattedValue as string,
-                                        this.Font,
-                                        stringBrush,
-                                        rectDimensions,
-                                        new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
-                                    );
-
-
-                                    if (!String.IsNullOrEmpty(this.CurrentCell.ErrorText))
-                                    {
-                                        TextBox txtBox = this.EditingControl as TextBox;
-                                        this.BeginEdit(true);
-                                        txtBox.SelectionStart = int.Parse(this.CurrentCell.ErrorText);
-                                        txtBox.SelectionLength = 1;
-                                        txtBox.Focus();
-                                    }
-
-                                    e.Graphics.DrawRectangle(borderpen, rectDimensions);
-                                    e.Handled = true;
-
-                                }
-                            }
-                            else 
-                            {
-
-                                using (Pen eraser = new Pen(this.BackgroundColor, 2))
-                                {
-
-                                    using (Pen borderPen = new Pen(this.GridColor))
-                                    {
-
-                                        Rectangle borderDimensions = e.CellBounds;
-                                        borderDimensions.Width -= 1;
-                                        borderDimensions.Height -= 1;
-                                        borderDimensions.X = borderDimensions.X + 1;
-                                        borderDimensions.Y = borderDimensions.Y + 1;
-
-
-                                        e.Graphics.DrawRectangle(eraser, borderDimensions);
-
-                                        e.Graphics.FillRectangle(backBrush, borderDimensions);
-
-                                        e.Graphics.DrawString(
-                                            e.FormattedValue as string,
-                                            this.Font,
-                                            stringBrush,
-                                            borderDimensions,
-                                            new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
-                                        );
-                                        borderDimensions.Width += 1;
-                                        borderDimensions.Height += 1;
-                                        borderDimensions.X = borderDimensions.Left - 1;
-                                        borderDimensions.Y = borderDimensions.Top - 1;
-
-                                        e.Graphics.DrawRectangle(borderPen, borderDimensions);
-
-                                        e.Handled = true;
-
-
-
-                                    }
-                                }
-                            }
                             
-
+                            //cellToBePainted.DrawSelectedBorders(e);
+                            cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
+                            
                         }
+                        else cellToBePainted.DrawSelectedBorders(e);
+                        
+                    }
+                    else
+                    {
+                        cellToBePainted = this.Rows[e.RowIndex].Cells[e.ColumnIndex] as SheetCell;
+
+                        if (cellToBePainted.IsFormatted)
+                        {
+                            
+                            //cellToBePainted.DrawSelectedBorders(e);
+                            //cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
+                        }
+                        else cellToBePainted.DrawNonSelectedBorders(e);
 
                     }
-
                 }
                 else e.Handled = false;
 
-
-
-
+                
             };
+          
 
             RowPostPaint += (sender, e) =>
             {
@@ -202,13 +142,13 @@ namespace spreadsheetApp
 
             ColumnHeaderMouseClick += (sender, e) =>
             {
-                DataGridView grid = sender as DataGridView;
+                Sheet grid = sender as Sheet;
 
                 // Check that a valid column index is clicked
                 if (e.ColumnIndex >= 0)
                 {
                     grid.ClearSelection(); // Clear any existing selection
-                    foreach (DataGridViewRow row in grid.Rows)
+                    foreach (SheetRow row in grid.Rows)
                     {
                         row.Cells[e.ColumnIndex].Selected = true; // Select each cell in the clicked column
                     }

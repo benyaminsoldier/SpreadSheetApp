@@ -150,7 +150,21 @@ namespace spreadsheetApp
 
         private void Document_Load(object sender, EventArgs e)
         {
-            colorsPallette2.ChosenColor += (s, e) => { /*SheetCell Method pending*/};
+            colorsPallette2.ChosenColor += (s, e) => {
+                /*SheetCell Method pending*/
+
+                SheetCell cell = e.Cell as SheetCell;
+                cell.IsFormatted = true;
+                cell.BackGroundColor = e.ChosenColor;
+                if (this.CurrentLayout.CurrentCell is SheetCell sheetCell && sheetCell.BackGroundColor == cell.BackGroundColor)
+                {
+                    this.CurrentLayout.Refresh();
+                }
+               
+ 
+
+            
+            };
         }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -232,7 +246,7 @@ namespace spreadsheetApp
             }
         }
 
-        private void toolStripSplitButton1_Click(object sender, EventArgs e)
+        private void BackGroundCellFormatBtn_Click(object sender, EventArgs e)
         {
             
             if (colorsPallette2.Visible) colorsPallette2.SendToBack();

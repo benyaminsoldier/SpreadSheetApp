@@ -36,6 +36,7 @@
             toolStripSeparator2 = new ToolStripSeparator();
             cutBtn = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
+            btn_backGroundCellFormat = new ToolStripButton();
             menuBar = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -47,7 +48,6 @@
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnSheet = new Button();
             colorsPallette2 = new ColorsPallette();
-            toolStripSplitButton1 = new ToolStripButton();
             toolBar.SuspendLayout();
             menuBar.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -56,7 +56,7 @@
             // toolBar
             // 
             toolBar.ImageScalingSize = new Size(24, 24);
-            toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, toolStripSplitButton1 });
+            toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, btn_backGroundCellFormat });
             toolBar.Location = new Point(0, 33);
             toolBar.Name = "toolBar";
             toolBar.Size = new Size(1174, 33);
@@ -104,6 +104,16 @@
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new Size(6, 33);
+            // 
+            // btn_backGroundCellFormat
+            // 
+            btn_backGroundCellFormat.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btn_backGroundCellFormat.Image = (Image)resources.GetObject("btn_backGroundCellFormat.Image");
+            btn_backGroundCellFormat.ImageTransparentColor = Color.Magenta;
+            btn_backGroundCellFormat.Name = "btn_backGroundCellFormat";
+            btn_backGroundCellFormat.Size = new Size(34, 28);
+            btn_backGroundCellFormat.Text = "toolStripSplitButton1";
+            btn_backGroundCellFormat.Click += BackGroundCellFormatBtn_Click;
             // 
             // menuBar
             // 
@@ -192,16 +202,7 @@
             colorsPallette2.Padding = new Padding(1);
             colorsPallette2.Size = new Size(273, 238);
             colorsPallette2.TabIndex = 16;
-            // 
-            // toolStripSplitButton1
-            // 
-            toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripSplitButton1.Image = (Image)resources.GetObject("toolStripSplitButton1.Image");
-            toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
-            toolStripSplitButton1.Name = "toolStripSplitButton1";
-            toolStripSplitButton1.Size = new Size(34, 28);
-            toolStripSplitButton1.Text = "toolStripSplitButton1";
-            toolStripSplitButton1.Click += toolStripSplitButton1_Click;
+            colorsPallette2.Visible = false;
             // 
             // Document
             // 
@@ -246,6 +247,6 @@
         private ColorsPallette colorsPallette1;
         private ColorsPallette colorsPallette2;
         private ToolStripSeparator toolStripSeparator3;
-        private ToolStripButton toolStripSplitButton1;
+        private ToolStripButton btn_backGroundCellFormat;
     }
 }

@@ -9,5 +9,7 @@ namespace spreadsheetApp
     public class ColorChosenEventArgs : EventArgs
     {
         public Color ChosenColor { get; set; }
+        public DataGridViewTextBoxCell Cell { get; set; } 
+                
     }
 }

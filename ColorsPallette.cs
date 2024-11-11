@@ -95,8 +95,13 @@ namespace spreadsheetApp
                     };
                     np.Click += (sender, e) =>
                     {
+                        
+                        Document doc = this.Parent as Document;
+                        Sheet grid = doc.CurrentLayout as Sheet;
+                        SheetCell cell = grid.CurrentCell as SheetCell;
+                        
                         CurrentColor = np.BackColor;
-                        OnColorChosen(new ColorChosenEventArgs() { ChosenColor = np.BackColor });
+                        OnColorChosen(new ColorChosenEventArgs() { ChosenColor = np.BackColor , Cell = cell});
                         this.SendToBack();
                         this.Visible = false;
 
