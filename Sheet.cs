@@ -61,15 +61,19 @@ namespace spreadsheetApp
             
             EditingControlShowing += ( sender, e) =>
             {
-                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+
             };
 
             CellValidating += (sender, cell) =>
             {
                 DataGridView grid = sender as DataGridView;
                 SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
+               
                 editedCell.SetValue(grid, cell);
                 this.RefreshEdit(); 
+                this.Refresh();
 
                 //Updating source
                 source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
@@ -84,28 +88,31 @@ namespace spreadsheetApp
             {
                 //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 // For all regular cells within grid
-                bool selectedCell = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count && this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected;
-                bool nonSelectedCell = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count && !this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected;
-               
-                using (SolidBrush stringBrush = new SolidBrush(this.ForeColor))
+                bool cellWithinBounds = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count;
+                
+                if (cellWithinBounds)
                 {
-                    using (SolidBrush backBrush = new SolidBrush(Color.White))
+                    bool selectedCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected;
+                    using (SolidBrush stringBrush = new SolidBrush(this.ForeColor))
                     {
-                        if (selectedCell)
+                        using (SolidBrush backBrush = new SolidBrush(Color.White))
                         {
-
-
-                            using (Pen borderpen = new Pen(Color.DarkOliveGreen, 2))
+                            if (selectedCell)
                             {
-                                Rectangle rectDimensions = e.CellBounds;
-                                rectDimensions.Width -= 1;
-                                rectDimensions.Height -= 1;
-                                rectDimensions.X = rectDimensions.X + 1;
-                                rectDimensions.Y = rectDimensions.Y + 1;
 
 
-                                e.Graphics.FillRectangle(backBrush, rectDimensions);
-                                e.Graphics.DrawString(
+                                using (Pen borderpen = new Pen(Color.DarkOliveGreen, 2))
+                                {
+                                    Rectangle rectDimensions = e.CellBounds;
+                                    rectDimensions.Width -= 1;
+                                    rectDimensions.Height -= 1;
+                                    rectDimensions.X = rectDimensions.X + 1;
+                                    rectDimensions.Y = rectDimensions.Y + 1;
+
+
+                                    e.Graphics.FillRectangle(backBrush, rectDimensions);
+
+                                    e.Graphics.DrawString(
                                         e.FormattedValue as string,
                                         this.Font,
                                         stringBrush,
@@ -113,57 +120,70 @@ namespace spreadsheetApp
                                         new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
                                     );
 
-                                e.Graphics.DrawRectangle(borderpen, rectDimensions);
-                                e.Handled = true;
 
-                            }
-                        }
-                        else if (nonSelectedCell)
-                        {
+                                    if (!String.IsNullOrEmpty(this.CurrentCell.ErrorText))
+                                    {
+                                        TextBox txtBox = this.EditingControl as TextBox;
+                                        this.BeginEdit(true);
+                                        txtBox.SelectionStart = int.Parse(this.CurrentCell.ErrorText);
+                                        txtBox.SelectionLength = 1;
+                                        txtBox.Focus();
+                                    }
 
-                            using (Pen eraser = new Pen(this.BackgroundColor, 2))
-                            {
-
-                                using (Pen borderPen = new Pen(this.GridColor))
-                                {
-
-                                    Rectangle borderDimensions = e.CellBounds;
-                                    borderDimensions.Width -= 1;
-                                    borderDimensions.Height -= 1;
-                                    borderDimensions.X = borderDimensions.X + 1;
-                                    borderDimensions.Y = borderDimensions.Y + 1;
-
-                           
-                                    e.Graphics.DrawRectangle(eraser, borderDimensions);
-
-                                    e.Graphics.FillRectangle(backBrush, borderDimensions);
-
-                                    e.Graphics.DrawString(
-                                        e.FormattedValue as string,
-                                        this.Font,
-                                        stringBrush,
-                                        borderDimensions,
-                                        new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
-                                    );
-                                    borderDimensions.Width += 1;
-                                    borderDimensions.Height += 1;
-                                    borderDimensions.X = borderDimensions.Left - 1;
-                                    borderDimensions.Y = borderDimensions.Top - 1;
-
-                                    e.Graphics.DrawRectangle(borderPen, borderDimensions);
-
+                                    e.Graphics.DrawRectangle(borderpen, rectDimensions);
                                     e.Handled = true;
-
-
 
                                 }
                             }
+                            else 
+                            {
+
+                                using (Pen eraser = new Pen(this.BackgroundColor, 2))
+                                {
+
+                                    using (Pen borderPen = new Pen(this.GridColor))
+                                    {
+
+                                        Rectangle borderDimensions = e.CellBounds;
+                                        borderDimensions.Width -= 1;
+                                        borderDimensions.Height -= 1;
+                                        borderDimensions.X = borderDimensions.X + 1;
+                                        borderDimensions.Y = borderDimensions.Y + 1;
+
+
+                                        e.Graphics.DrawRectangle(eraser, borderDimensions);
+
+                                        e.Graphics.FillRectangle(backBrush, borderDimensions);
+
+                                        e.Graphics.DrawString(
+                                            e.FormattedValue as string,
+                                            this.Font,
+                                            stringBrush,
+                                            borderDimensions,
+                                            new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
+                                        );
+                                        borderDimensions.Width += 1;
+                                        borderDimensions.Height += 1;
+                                        borderDimensions.X = borderDimensions.Left - 1;
+                                        borderDimensions.Y = borderDimensions.Top - 1;
+
+                                        e.Graphics.DrawRectangle(borderPen, borderDimensions);
+
+                                        e.Handled = true;
+
+
+
+                                    }
+                                }
+                            }
+                            
+
                         }
-                        else e.Handled = false;
 
                     }
 
                 }
+                else e.Handled = false;
 
 
 
