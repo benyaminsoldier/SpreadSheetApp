@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using System.Runtime.CompilerServices;
 
 namespace spreadsheetApp
 {
@@ -6,7 +7,7 @@ namespace spreadsheetApp
     {
 
       
-            public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
+        public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
             
             string exp = cell.FormattedValue as string;
@@ -14,35 +15,32 @@ namespace spreadsheetApp
             try
             {
                 Value = ProccessExpression(exp);
-                
+                this.ErrorText = null;
             }
             catch (InvalidFormulaException ife)
             {
                 if (MessageBox.Show(ife.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1) == DialogResult.OK)
                 {
                     
-                    int indexOfError = Array.IndexOf(exp.ToCharArray(), ife.InvalidChar);
-
-                    if (indexOfError != -1)
+                    int indexOfError = exp.IndexOf(ife.InvalidChar);//Array.IndexOf(exp.ToCharArray(), ife.InvalidChar);
+                    
+                    if (indexOfError != -1) 
                     {
-                        var editedCell = this.DataGridView.CurrentCell;
+                        this.ErrorText = indexOfError.ToString();
                         this.DataGridView.BeginEdit(true); //Allows us to programmatically edit the cell textbox.
                         TextBox txtBox = this.DataGridView.EditingControl as TextBox;
+                        txtBox.Text = exp;
+                        this.Value = exp;
                         txtBox.SelectionStart = indexOfError;
-                        txtBox.SelectionLength = 1;
-                        txtBox.Focus();
+                        txtBox.SelectionLength = 1;                        
                         cell.Cancel = true;
                     }
-                }
-                
+                }               
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
-        
-  
-
         }
 
         private string ProccessExpression(string exp)

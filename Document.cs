@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ using System.Windows.Forms;
 
 namespace spreadsheetApp
 {
-public partial class Document : Form
+    public partial class Document : Form
     {
         public string FileName { get; set; } = "";
         public int NumOfRows { get; set; }
@@ -27,7 +28,7 @@ public partial class Document : Form
         public DataTable CurrentDataTable { get; set; }
 
         public Document(string name, int numOfRows, int numOfColumns, string filePath)
-        {       
+        {
             FileName = name;
             NumOfRows = numOfRows;
             NumOfColumns = numOfColumns;
@@ -48,7 +49,7 @@ public partial class Document : Form
             NumOfColumns = numOfColumns;
             FilePath = filePath;
             OriginDate = DateTime.Now;
-            LastModificationDate = DateTime.Now;            
+            LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
             //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
             CurrentLayout = new Sheet(CurrentDataTable);
@@ -59,7 +60,7 @@ public partial class Document : Form
         }
 
 
-       
+
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
         //private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
@@ -146,6 +147,11 @@ public partial class Document : Form
         {
             this.Show();
         }
+
+        private void Document_Load(object sender, EventArgs e)
+        {
+            colorsPallette2.ChosenColor += (s, e) => { /*SheetCell Method pending*/};
+        }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -187,6 +193,12 @@ public partial class Document : Form
                 }
             }
         }
+
+        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
+        {
+            colorsPallette2.BringToFront();
+        }
+
         public class DocParams
         {
             private string title;
@@ -208,9 +220,9 @@ public partial class Document : Form
             }
             private int validateRows(int rows)
             {
-                if ( int.IsPositive(rows)) return rows ;
+                if (int.IsPositive(rows)) return rows;
                 else throw new Exception("Invalid number of rows");
-               
+
             }
             private int validateCols(int cols)
             {
@@ -218,6 +230,15 @@ public partial class Document : Form
                 else throw new Exception("Invalid number of columns");
 
             }
+        }
+
+        private void toolStripSplitButton1_Click(object sender, EventArgs e)
+        {
+            
+            if (colorsPallette2.Visible) colorsPallette2.SendToBack();
+            else colorsPallette2.BringToFront();
+
+            colorsPallette2.Visible = !colorsPallette2.Visible;
         }
     }
 }
