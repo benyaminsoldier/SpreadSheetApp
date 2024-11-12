@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,8 +63,6 @@ namespace spreadsheetApp
             EditingControlShowing += ( sender, e) =>
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-
             };
 
             CellValidating += (sender, cell) =>
@@ -82,10 +81,11 @@ namespace spreadsheetApp
 
             };
 
-            //CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); };
+            CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); this.Refresh(); };
 
             CellPainting += (sender, e) =>
             {
+                //System.Drawing.Drawing2D.SmoothingMode sm = SmoothingMode.AntiAlias;
                 
                 SheetCell cellToBePainted;
                 bool cellIsWithinBounds = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count;
@@ -100,14 +100,21 @@ namespace spreadsheetApp
                         cellToBePainted = this.Rows[e.RowIndex].Cells[e.ColumnIndex] as SheetCell;
                         var cellToBePainted2 = cellToBePainted as DataGridViewTextBoxCell;
 
-                        if (cellToBePainted.IsFormatted )
+                        if (cellToBePainted.IsFormatted)
                         {
+
+                            cellToBePainted.DrawSelectedCellBorder(e);
+                            cellToBePainted.FillCellBackGround2(cellToBePainted.BackGroundColor);
+                            cellToBePainted.DrawCellString(e);
                             
-                            //cellToBePainted.DrawSelectedBorders(e);
-                            cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
+
+
+                        }
+                        else
+                        {
+                            cellToBePainted.DrawSelectedCell(e);
                             
                         }
-                        else cellToBePainted.DrawSelectedBorders(e);
                         
                     }
                     else
@@ -116,13 +123,21 @@ namespace spreadsheetApp
 
                         if (cellToBePainted.IsFormatted)
                         {
+                            cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
+                            cellToBePainted.DrawDefaultCellBorder(e);
+                            cellToBePainted.DrawCellString(e);
                             
                             //cellToBePainted.DrawSelectedBorders(e);
-                            //cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
+                            
                         }
-                        else cellToBePainted.DrawNonSelectedBorders(e);
+                        else
+                        {
+                            cellToBePainted.DrawNonSelectedCell(e);
+                            
+                        }
 
                     }
+                    e.Handled = true;
                 }
                 else e.Handled = false;
 
