@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Office2016.Excel;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Drawing2D;
@@ -11,7 +13,7 @@ namespace spreadsheetApp
 {
     internal class Sheet : DataGridView
     {
-
+        private SheetCell justLeftCell;
         public Sheet(DataTable source)
         {
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
@@ -19,8 +21,7 @@ namespace spreadsheetApp
             Name = source.Namespace;
             TabIndex = 14;
             Dock = DockStyle.Fill;
-            BackgroundColor = Color.White;
-            
+            BackgroundColor = System.Drawing.Color.White;
 
             //ALLOW USER
             AllowUserToDeleteRows = false;
@@ -35,19 +36,19 @@ namespace spreadsheetApp
 
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
-            ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
-            ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+            ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
             ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
             //ROW HEADERS
             RowTemplate = new SheetRow();
             RowHeadersWidth = 50;
-            RowHeadersDefaultCellStyle.BackColor = Color.LightGray;
-            RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+            RowHeadersDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            RowHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.Color.LightGray;
 
-            DefaultCellStyle.SelectionBackColor = Color.Transparent;
-            DefaultCellStyle.SelectionForeColor = Color.Red;
+            DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
+            DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Red;
             
             
             //Grid Generation
@@ -58,7 +59,7 @@ namespace spreadsheetApp
             foreach (DataRow row in source.Rows) Rows.Add(new SheetRow());
 
             // EVENTS
-
+           
             
             EditingControlShowing += ( sender, e) =>
             {
@@ -72,7 +73,7 @@ namespace spreadsheetApp
                
                 editedCell.SetValue(grid, cell);
                 this.RefreshEdit(); 
-                this.Refresh();
+                //this.Refresh();
 
                 //Updating source
                 source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
@@ -80,74 +81,27 @@ namespace spreadsheetApp
                 //How to update the cell format so it can be saved n loaded with the cells values???
 
             };
+            
 
-            CellEnter += (s, e) => { this.InvalidateCell(this.CurrentCell); this.Refresh(); };
 
             CellPainting += (sender, e) =>
             {
-                //System.Drawing.Drawing2D.SmoothingMode sm = SmoothingMode.AntiAlias;
-                
-                SheetCell cellToBePainted;
-                bool cellIsWithinBounds = e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count;
 
-                if (cellIsWithinBounds)
+                if (e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count)
                 {
                     
-                    bool selectedCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected;
+                    
 
-                    if (selectedCell)
-                    {
-                        cellToBePainted = this.Rows[e.RowIndex].Cells[e.ColumnIndex] as SheetCell;
-                        var cellToBePainted2 = cellToBePainted as DataGridViewTextBoxCell;
-
-                        if (cellToBePainted.IsFormatted)
-                        {
-
-                            cellToBePainted.DrawSelectedCellBorder(e);
-                            cellToBePainted.FillCellBackGround2(cellToBePainted.BackGroundColor);
-                            cellToBePainted.DrawCellString(e);
-                            
-
-
-                        }
-                        else
-                        {
-                            cellToBePainted.DrawSelectedCell(e);
-                            
-                        }
-                        
-                    }
-                    else
-                    {
-                        cellToBePainted = this.Rows[e.RowIndex].Cells[e.ColumnIndex] as SheetCell;
-
-                        if (cellToBePainted.IsFormatted)
-                        {
-                            cellToBePainted.FillCellBackGround(cellToBePainted.BackGroundColor);
-                            cellToBePainted.DrawDefaultCellBorder(e);
-                            cellToBePainted.DrawCellString(e);
-                            
-                            //cellToBePainted.DrawSelectedBorders(e);
-                            
-                        }
-                        else
-                        {
-                            cellToBePainted.DrawNonSelectedCell(e);
-                            
-                        }
-
-                    }
-                    e.Handled = true;
+                    e.Handled = false;
                 }
                 else e.Handled = false;
-
-                
+   
             };
           
 
             RowPostPaint += (sender, e) =>
             {
-                using (Brush sb = new SolidBrush(Color.Black))
+                using (Brush sb = new SolidBrush(System.Drawing.Color.Black))
                 {                   
                     int xOffSet = 15;
                     if (e.RowIndex > 9) xOffSet = 10;

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Office2016.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using System.Runtime.CompilerServices;
 
 namespace spreadsheetApp
@@ -6,53 +7,68 @@ namespace spreadsheetApp
      class SheetCell : DataGridViewTextBoxCell
     {
         private Rectangle cellArea;
-        public bool IsFormatted {  get;  set; }  = false;
-        public System.Drawing.Color BackGroundColor { get; set; } = System.Drawing.Color.White; 
         public Rectangle CellArea
         {
             get { return GetCellArea(); }
             set { cellArea = value; }
         }
-        private Rectangle GetCellArea() 
+
+
+        public System.Drawing.Color BackGroundColor { get; set; } = System.Drawing.Color.White; 
+
+        protected Rectangle GetCellArea() 
         {
             Rectangle r = new Rectangle();
-            r.Width = cellArea.Width - 1;
-            r.Height = cellArea.Height - 1;
+            r.Width = cellArea.Width - 3;
+            r.Height = cellArea.Height - 3;
             r.X = cellArea.X + 1;
             r.Y = cellArea.Y + 1;
             return r;
         }
- 
-        public void DrawCellString(DataGridViewCellPaintingEventArgs e)
+        protected void DrawCellString(Graphics g, Rectangle cellBounds)
         {
-       
-            CellArea = e.CellBounds;
+            CellArea = cellBounds;
             using (SolidBrush stringBrush = new SolidBrush(System.Drawing.Color.Black))
             {
-                e.Graphics.DrawString(
-                            e.Value as string,
-                            this.DataGridView.Font,
+                g.DrawString(
+                            Value as string,
+                            DataGridView.Font,
                             stringBrush,
-                            this.CellArea,
+                            CellArea,
                             new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
                         );
             }
         }
-        public void FillCellBackGround(DataGridViewCellPaintingEventArgs e)
+        protected void FillCellBackGround(Graphics g, Rectangle cellBounds, System.Drawing.Color backGround)
         {
-            CellArea = e.CellBounds;
-            Rectangle cellBounds = new Rectangle();
-            cellBounds.X = CellArea.X + 1;
-            cellBounds.Y = CellArea.Y + 1;
-            cellBounds.Width = CellArea.Width - 2;
-            cellBounds.Height = CellArea.Height - 2;
-            using (SolidBrush backBrush = new SolidBrush(System.Drawing.Color.White))
+            
+            CellArea = cellBounds;
+            if (!this.Selected)
             {
-                e.Graphics.FillRectangle(backBrush, cellBounds);
+                Rectangle r = new Rectangle()
+                {
+                    X = CellArea.X-1,
+                    Y = CellArea.Y-1,
+                    Width = CellArea.Width +2,
+                    Height = CellArea.Height + 2
+                };
+                using (SolidBrush backBrush = new SolidBrush(backGround))
+                {
+                    g.FillRectangle(backBrush, r);
+                }
+                ;
             }
+            else
+            {
+                using (SolidBrush backBrush = new SolidBrush(backGround))
+                {
+                    g.FillRectangle(backBrush, CellArea);
+                }
+            }
+            
 
         }
-        public void FillCellBackGround(System.Drawing.Color backgroundColor)
+        protected void FillCellBackGround(System.Drawing.Color backgroundColor)
         {
                      
             Graphics g = this.DataGridView.CreateGraphics();
@@ -61,93 +77,36 @@ namespace spreadsheetApp
             {
                 g.FillRectangle(backBrush, CellArea);
             }
-            //this.DataGridView.Refresh();
-        }
-        public void FillCellBackGround2(System.Drawing.Color backgroundColor)
-        {
-
-            Graphics g = this.DataGridView.CreateGraphics();
             
-            Rectangle cellBounds = new Rectangle();
-            cellBounds.X = CellArea.X + 1;
-            cellBounds.Y = CellArea.Y + 1;
-            cellBounds.Width = CellArea.Width - 2;
-            cellBounds.Height = CellArea.Height - 2;
-            g.Clip = new Region(cellBounds);
-            using (SolidBrush backBrush = new SolidBrush(backgroundColor))
-            {
-                g.FillRectangle(backBrush, cellBounds);
-            }
-            //this.DataGridView.Refresh();
         }
 
-        public void EraseCellBorder(DataGridViewCellPaintingEventArgs e)
-        {
-            using (Pen eraser = new Pen(this.DataGridView.BackgroundColor, 2))
-            {
-                CellArea = e.CellBounds;
-                e.Graphics.DrawRectangle(eraser, CellArea);
-            }
-        }
-        public void DrawDefaultCellBorder(DataGridViewCellPaintingEventArgs e)
-        {
-            using (Pen borderPen = new Pen(this.DataGridView.GridColor))
-            {
-                CellArea = e.CellBounds;
-                e.Graphics.DrawRectangle(borderPen, e.CellBounds);         
-            }         
-        }
-        public void DrawSelectedCellBorder(DataGridViewCellPaintingEventArgs e)
+        protected void DrawSelectedCellBorder(Graphics g, Rectangle cellBounds)
         {
             using (Pen borderpen = new Pen(System.Drawing.Color.DarkOliveGreen, 2))
             {
-                CellArea = e.CellBounds;
-                e.Graphics.DrawRectangle(borderpen, CellArea);
+                CellArea = cellBounds;
+                g.DrawRectangle(borderpen, CellArea);
             }
         }
-        public  void DrawNonSelectedCell(DataGridViewCellPaintingEventArgs e)
-        {     
-            
-            EraseCellBorder(e);
-            FillCellBackGround(e);
-            DrawCellString(e);
-            DrawDefaultCellBorder(e);
-            
-                                          
-        }
-        public void DrawSelectedCell(DataGridViewCellPaintingEventArgs e)
+
+        protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
-            FillCellBackGround(e);
-            DrawCellString(e);
+            base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 
-            if (!String.IsNullOrEmpty(this.DataGridView.CurrentCell.ErrorText))
+            if (this.RowIndex >= 0 && this.ColumnIndex >= 0) 
             {
-                TextBox txtBox = this.DataGridView.EditingControl as TextBox;
-                this.DataGridView.BeginEdit(true);
-                txtBox.SelectionStart = int.Parse(this.DataGridView.CurrentCell.ErrorText);
-                txtBox.SelectionLength = 1;
-                txtBox.Focus();
+                FillCellBackGround(graphics, cellBounds, BackGroundColor);
+                if (string.IsNullOrEmpty(errorText)) DrawCellString(graphics, cellBounds);
+                else
+                {
+                    
+                }
+
+                
+                if (this.Selected) DrawSelectedCellBorder(graphics, cellBounds);
             }
-            DrawSelectedCellBorder(e) ;
-            
-                          
         }
-        public void DrawSelectedCell(System.Drawing.Color backGroundColor, System.Drawing.Color fontColor)
-        {
-           
 
-            if (!String.IsNullOrEmpty(this.DataGridView.CurrentCell.ErrorText))
-            {
-                TextBox txtBox = this.DataGridView.EditingControl as TextBox;
-                this.DataGridView.BeginEdit(true);
-                txtBox.SelectionStart = int.Parse(this.DataGridView.CurrentCell.ErrorText);
-                txtBox.SelectionLength = 1;
-                txtBox.Focus();
-            }
-            
-
-
-        }
 
         public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
@@ -201,9 +160,7 @@ namespace spreadsheetApp
         }
         public override object Clone()
         {
-
-            var clone = (SheetCell)base.Clone();
-            clone.IsFormatted = IsFormatted;
+            var clone = (SheetCell)base.Clone(); 
             clone.CellArea = CellArea;
             clone.BackGroundColor = BackGroundColor;
             return clone;

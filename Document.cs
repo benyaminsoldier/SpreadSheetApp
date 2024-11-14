@@ -153,17 +153,15 @@ namespace spreadsheetApp
             colorsPallette2.ChosenColor += (s, e) => {
                 /*SheetCell Method pending*/
 
-                SheetCell cell = e.Cell as SheetCell;
-                cell.IsFormatted = true;
-                cell.BackGroundColor = e.ChosenColor;
-                if (this.CurrentLayout.CurrentCell is SheetCell sheetCell && sheetCell.BackGroundColor == cell.BackGroundColor)
+                if(e.Cell is SheetCell cell)
                 {
-                    this.CurrentLayout.Refresh();
-                }
-               
- 
+                    cell.BackGroundColor = e.ChosenColor;
+                    if (this.CurrentLayout.CurrentCell is SheetCell sheetCell && sheetCell.BackGroundColor == cell.BackGroundColor)
+                    {
+                        this.CurrentLayout.InvalidateCell(cell);
+                    }
+                }              
 
-            
             };
         }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
