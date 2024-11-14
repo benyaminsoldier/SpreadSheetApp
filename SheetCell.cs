@@ -13,7 +13,9 @@ namespace spreadsheetApp
             get { return GetCellArea(); }
             set { cellArea = value; }
         }
-        public System.Drawing.Color BackGroundColor { get; set; } = System.Drawing.Color.White; 
+        public System.Drawing.Color BackGroundColor { get; set; } = System.Drawing.Color.White;
+        public System.Drawing.Color ForeColor { get; set; } = System.Drawing.SystemColors.InfoText;
+        public System.Drawing.StringAlignment Alignment { get; set; } = System.Drawing.StringAlignment.Far;
         protected Rectangle GetCellArea() 
         {
             Rectangle r = new Rectangle();
@@ -37,14 +39,14 @@ namespace spreadsheetApp
             if (string.IsNullOrEmpty(errorText)) 
             {
                 CellArea = cellBounds;
-                using (SolidBrush stringBrush = new SolidBrush(System.Drawing.Color.Black))
+                using (SolidBrush stringBrush = new SolidBrush(ForeColor))
                 {
                     g.DrawString(
                         Value as string,
                         DataGridView.Font,
                         stringBrush,
                         CellArea,
-                        new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
+                        new StringFormat { Alignment = Alignment, LineAlignment =Alignment }
                     );
                 }
             }
@@ -149,6 +151,8 @@ namespace spreadsheetApp
             var clone = (SheetCell)base.Clone(); 
             clone.CellArea = CellArea;
             clone.BackGroundColor = BackGroundColor;
+            clone.ForeColor = ForeColor;
+            clone.Alignment = Alignment;
             return clone;
         }
     }

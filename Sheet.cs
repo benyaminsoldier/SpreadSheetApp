@@ -27,6 +27,7 @@ namespace spreadsheetApp
             AllowUserToDeleteRows = false;
             AllowUserToAddRows = false;
             AllowUserToResizeColumns = true;
+            MultiSelect = true;
 
             // this shuts downs the default style.
             EnableHeadersVisualStyles = false;
