@@ -49,8 +49,7 @@ namespace spreadsheetApp
 
             DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
             DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Red;
-            
-            
+                     
             //Grid Generation
             //Try block missed here to handle unmeasured user table sizes
             
@@ -59,8 +58,7 @@ namespace spreadsheetApp
             foreach (DataRow row in source.Rows) Rows.Add(new SheetRow());
 
             // EVENTS
-           
-            
+                       
             EditingControlShowing += ( sender, e) =>
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -72,33 +70,16 @@ namespace spreadsheetApp
                 SheetCell editedCell = (SheetCell)grid.Rows[cell.RowIndex].Cells[cell.ColumnIndex];
                
                 editedCell.SetValue(grid, cell);
-                this.RefreshEdit(); 
-                //this.Refresh();
-
+                this.RefreshEdit(); //updates edited value.
+                this.InvalidateCell(editedCell);//re paints cell
+                
                 //Updating source
                 source.Rows[editedCell.RowIndex][editedCell.ColumnIndex] = editedCell.Value;
 
                 //How to update the cell format so it can be saved n loaded with the cells values???
 
             };
-            
-
-
-            CellPainting += (sender, e) =>
-            {
-
-                if (e.RowIndex >= 0 && e.RowIndex < this.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < this.Columns.Count)
-                {
-                    
-                    
-
-                    e.Handled = false;
-                }
-                else e.Handled = false;
-   
-            };
-          
-
+                     
             RowPostPaint += (sender, e) =>
             {
                 using (Brush sb = new SolidBrush(System.Drawing.Color.Black))
@@ -123,8 +104,6 @@ namespace spreadsheetApp
                     }
                 }
             };
-
-
 
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
 

@@ -12,8 +12,7 @@ using System.Windows.Forms;
 namespace spreadsheetApp
 {
     public partial class ColorsPallette : UserControl
-    {
-        
+    {       
         public System.Drawing.Color CurrentColor {  get; set; }
         public List<System.Drawing.Color> Colors { get; set; }
 
@@ -30,7 +29,6 @@ namespace spreadsheetApp
             Colors = GetDefaultColorsList();
             PopulatePallette();
             Visible = false;
-
         }
         public ColorsPallette(List<System.Drawing.Color> colors)
         {
@@ -38,7 +36,6 @@ namespace spreadsheetApp
             Colors = colors.Take(10).ToList();
             PopulatePallette();
             Visible = false;
-
         }
         private List<System.Drawing.Color> GetDefaultColorsList()
         {
@@ -65,10 +62,8 @@ namespace spreadsheetApp
             found = temp.Where(color => color.Name == "LightBlue").ToList(); if (found.Count > 0) colors.Add(found[0]);
             found = temp.Where(color => color.Name == "Green").ToList(); if (found.Count > 0) colors.Add(found[0]);
 
-
             return colors;
         }
-
         private void PopulatePallette()
         {
 
@@ -113,9 +108,6 @@ namespace spreadsheetApp
                 }
             }
         }
-
-
-
         private void btn_moreColors_Click(object sender, EventArgs e)
         {
             using (ColorDialog cd = new ColorDialog())
@@ -126,8 +118,7 @@ namespace spreadsheetApp
                     OnColorChosen(new ColorChosenEventArgs() { ChosenColor = cd.Color });
                     this.SendToBack();
                     this.Visible = false;
-                }
-                
+                }                
             }
         }
     }

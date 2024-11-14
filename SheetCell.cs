@@ -1,10 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace spreadsheetApp
 {
-     class SheetCell : DataGridViewTextBoxCell
+    class SheetCell : DataGridViewTextBoxCell
     {
         private Rectangle cellArea;
         public Rectangle CellArea
@@ -12,10 +13,7 @@ namespace spreadsheetApp
             get { return GetCellArea(); }
             set { cellArea = value; }
         }
-
-
         public System.Drawing.Color BackGroundColor { get; set; } = System.Drawing.Color.White; 
-
         protected Rectangle GetCellArea() 
         {
             Rectangle r = new Rectangle();
@@ -23,50 +21,49 @@ namespace spreadsheetApp
             r.Height = cellArea.Height - 3;
             r.X = cellArea.X + 1;
             r.Y = cellArea.Y + 1;
-            return r;
-        }
-        protected void DrawCellString(Graphics g, Rectangle cellBounds)
-        {
-            CellArea = cellBounds;
-            using (SolidBrush stringBrush = new SolidBrush(System.Drawing.Color.Black))
-            {
-                g.DrawString(
-                            Value as string,
-                            DataGridView.Font,
-                            stringBrush,
-                            CellArea,
-                            new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
-                        );
-            }
-        }
-        protected void FillCellBackGround(Graphics g, Rectangle cellBounds, System.Drawing.Color backGround)
-        {
-            
-            CellArea = cellBounds;
+
             if (!this.Selected)
             {
-                Rectangle r = new Rectangle()
+                r.X = r.X - 1;
+                r.Y = r.Y - 1;
+                r.Width = r.Width + 2;
+                r.Height = r.Height + 2; 
+            }
+
+            return r;
+        }
+        protected void DrawCellString(Graphics g, Rectangle cellBounds, string errorText)
+        {
+            if (string.IsNullOrEmpty(errorText)) 
+            {
+                CellArea = cellBounds;
+                using (SolidBrush stringBrush = new SolidBrush(System.Drawing.Color.Black))
                 {
-                    X = CellArea.X-1,
-                    Y = CellArea.Y-1,
-                    Width = CellArea.Width +2,
-                    Height = CellArea.Height + 2
-                };
-                using (SolidBrush backBrush = new SolidBrush(backGround))
-                {
-                    g.FillRectangle(backBrush, r);
+                    g.DrawString(
+                        Value as string,
+                        DataGridView.Font,
+                        stringBrush,
+                        CellArea,
+                        new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far }
+                    );
                 }
-                ;
             }
             else
             {
-                using (SolidBrush backBrush = new SolidBrush(backGround))
-                {
-                    g.FillRectangle(backBrush, CellArea);
-                }
-            }
-            
-
+                TextBox txtBox = this.DataGridView.EditingControl as TextBox;
+                this.DataGridView.BeginEdit(true);
+                txtBox.SelectionStart = int.Parse(errorText);
+                txtBox.SelectionLength = 1;
+                txtBox.Focus();
+            }   
+        }
+        protected void FillCellBackGround(Graphics g, Rectangle cellBounds, System.Drawing.Color backGround)
+        {
+            CellArea = cellBounds;
+            using (SolidBrush backBrush = new SolidBrush(backGround))
+            {
+                g.FillRectangle(backBrush, CellArea);
+            }           
         }
         protected void FillCellBackGround(System.Drawing.Color backgroundColor)
         {
@@ -79,7 +76,6 @@ namespace spreadsheetApp
             }
             
         }
-
         protected void DrawSelectedCellBorder(Graphics g, Rectangle cellBounds)
         {
             using (Pen borderpen = new Pen(System.Drawing.Color.DarkOliveGreen, 2))
@@ -88,26 +84,17 @@ namespace spreadsheetApp
                 g.DrawRectangle(borderpen, CellArea);
             }
         }
-
         protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
             base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 
-            if (this.RowIndex >= 0 && this.ColumnIndex >= 0) 
+            if (this.RowIndex != -1 && this.ColumnIndex != -1) 
             {
                 FillCellBackGround(graphics, cellBounds, BackGroundColor);
-                if (string.IsNullOrEmpty(errorText)) DrawCellString(graphics, cellBounds);
-                else
-                {
-                    
-                }
-
-                
+                DrawCellString(graphics, cellBounds, errorText);
                 if (this.Selected) DrawSelectedCellBorder(graphics, cellBounds);
             }
         }
-
-
         public void SetValue(object sender, DataGridViewCellValidatingEventArgs cell)
         {
             
@@ -133,7 +120,7 @@ namespace spreadsheetApp
                         txtBox.Text = exp;
                         this.Value = exp;
                         txtBox.SelectionStart = indexOfError;
-                        txtBox.SelectionLength = 1;                        
+                        txtBox.SelectionLength = 1;                                              
                         cell.Cancel = true;
                     }
                 }               
@@ -143,14 +130,13 @@ namespace spreadsheetApp
                 MessageBox.Show(e.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
         }
-
         private string ProccessExpression(string exp)
         {
             if (string.IsNullOrEmpty(exp)) return exp;
 
             exp = exp.Trim();
 
-            if (exp.StartsWith("=") || exp.StartsWith("+") || exp.StartsWith("-"))
+            if (exp.StartsWith("=") || exp.StartsWith("+"))
             {
                 if (exp.Length > 2) exp = exp.Substring(1);
                 else return exp.Substring(1);
@@ -165,7 +151,5 @@ namespace spreadsheetApp
             clone.BackGroundColor = BackGroundColor;
             return clone;
         }
-
     }
-
 }
