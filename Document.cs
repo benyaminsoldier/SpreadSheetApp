@@ -316,5 +316,15 @@ namespace spreadsheetApp
                 }
             }
         }
+
+        private void avgMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sumMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

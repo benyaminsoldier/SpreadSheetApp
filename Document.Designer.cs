@@ -57,6 +57,9 @@
             colorsPallette2 = new ColorsPallette();
             splitContainer1 = new SplitContainer();
             colorsPallette1 = new ColorsPallette();
+            toolStripButton1 = new ToolStripDropDownButton();
+            avgMenuItem = new ToolStripMenuItem();
+            sumMenuItem = new ToolStripMenuItem();
             toolBar.SuspendLayout();
             menuBar.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -67,7 +70,7 @@
             // toolBar
             // 
             toolBar.ImageScalingSize = new Size(24, 24);
-            toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, btn_backGroundCellFormat, toolStripSeparator4, btn_fontColor, toolStripSeparator5, btn_leftAlign, btn_centerAlign, btn_rightAlign, toolStripSeparator6 });
+            toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, btn_backGroundCellFormat, toolStripSeparator4, btn_fontColor, toolStripSeparator5, btn_leftAlign, btn_centerAlign, btn_rightAlign, toolStripSeparator6, toolStripButton1 });
             toolBar.Location = new Point(0, 33);
             toolBar.Name = "toolBar";
             toolBar.Size = new Size(1174, 35);
@@ -290,6 +293,30 @@
             colorsPallette1.TabIndex = 18;
             colorsPallette1.Visible = false;
             // 
+            // toolStripButton1
+            // 
+            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.DropDownItems.AddRange(new ToolStripItem[] { avgMenuItem, sumMenuItem });
+            toolStripButton1.Image = Properties.Resources.opsIcons1;
+            toolStripButton1.ImageTransparentColor = Color.Magenta;
+            toolStripButton1.Name = "toolStripButton1";
+            toolStripButton1.Size = new Size(42, 30);
+            toolStripButton1.Text = "toolStripButton1";
+            // 
+            // avgMenuItem
+            // 
+            avgMenuItem.Name = "avgMenuItem";
+            avgMenuItem.Size = new Size(270, 34);
+            avgMenuItem.Text = "AVG";
+            avgMenuItem.Click += avgMenuItem_Click;
+            // 
+            // sumMenuItem
+            // 
+            sumMenuItem.Name = "sumMenuItem";
+            sumMenuItem.Size = new Size(270, 34);
+            sumMenuItem.Text = "SUM";
+            sumMenuItem.Click += sumMenuItem_Click;
+            // 
             // Document
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -346,5 +373,8 @@
         private ToolStripButton btn_centerAlign;
         private ToolStripButton btn_rightAlign;
         private ToolStripSeparator toolStripSeparator6;
+        private ToolStripDropDownButton toolStripButton1;
+        private ToolStripMenuItem avgMenuItem;
+        private ToolStripMenuItem sumMenuItem;
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,7 +14,7 @@ namespace spreadsheetApp
 {
     internal class Sheet : DataGridView
     {
-        private SheetCell justLeftCell;
+        
         public Sheet(DataTable source)
         {
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
@@ -59,7 +60,7 @@ namespace spreadsheetApp
             foreach (DataRow row in source.Rows) Rows.Add(new SheetRow());
 
             // EVENTS
-                       
+            
             EditingControlShowing += ( sender, e) =>
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -107,6 +108,25 @@ namespace spreadsheetApp
             };
 
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
+
+        }
+        public static float AVG(DataGridViewSelectedCellCollection selectedCells)
+        {
+            float total = 0;
+            int count = 0;
+            foreach (DataGridViewCell cell in selectedCells) 
+            {
+                if(float.TryParse(cell.Value as string, out float value))
+                {
+                    total += value;
+                    count++;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            return total / count;    
 
         }
     }

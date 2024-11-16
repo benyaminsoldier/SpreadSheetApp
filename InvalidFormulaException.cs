@@ -8,10 +8,12 @@ namespace spreadsheetApp
 {
     internal class InvalidFormulaException : Exception
     {
-        public char InvalidChar {  get; set; }  
-        public InvalidFormulaException(string msg, char invalidChar) : base(msg)
+        public int InvalidChar { get; set; } 
+        
+        public InvalidFormulaException(string msg, int invalidChar) : base(msg)
         { 
             InvalidChar = invalidChar;
         }
+
     }
 }

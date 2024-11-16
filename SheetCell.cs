@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Drawing;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace spreadsheetApp
@@ -110,11 +111,9 @@ namespace spreadsheetApp
             catch (InvalidFormulaException ife)
             {
                 if (MessageBox.Show(ife.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1) == DialogResult.OK)
-                {
-                    
-                    int indexOfError = exp.IndexOf(ife.InvalidChar);//Array.IndexOf(exp.ToCharArray(), ife.InvalidChar);
-                    
-                    if (indexOfError != -1) 
+                {                 
+                    int indexOfError = ife.InvalidChar;//Array.IndexOf(exp.ToCharArray(), ife.InvalidChar);
+                    if (indexOfError != -1)
                     {
                         this.ErrorText = indexOfError.ToString();
                         this.DataGridView.BeginEdit(true); //Allows us to programmatically edit the cell textbox.
@@ -122,9 +121,9 @@ namespace spreadsheetApp
                         txtBox.Text = exp;
                         this.Value = exp;
                         txtBox.SelectionStart = indexOfError;
-                        txtBox.SelectionLength = 1;                                              
+                        txtBox.SelectionLength = 1;
                         cell.Cancel = true;
-                    }
+                    }     
                 }               
             }
             catch (Exception e)
@@ -132,17 +131,32 @@ namespace spreadsheetApp
                 MessageBox.Show(e.Message, "Invalid Formula", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
         }
+
         private string ProccessExpression(string exp)
         {
             if (string.IsNullOrEmpty(exp)) return exp;
 
             exp = exp.Trim();
+            string result;
 
             if (exp.StartsWith("=") || exp.StartsWith("+"))
             {
-                if (exp.Length > 2) exp = exp.Substring(1);
+                char[] expArr = exp.ToCharArray();
+                if (expArr[1] == 'A' && expArr[2]=='V' && expArr[3] == 'G')
+                {
+                    //DataGridViewSelectedCellCollection selectedCells = CurrentLa
+                    result = "Sheet.AVG()";
+
+                    return result;
+                }
+                else if(exp.Length > 2) 
+                { 
+                    exp = exp.Substring(1);
+                    result = ExpressionProcessor.ProcessCommand(exp);
+                    return result;
+                }
                 else return exp.Substring(1);
-                return ExpressionProcessor.ProcessCommand(exp);               
+               
             }
             else return exp;
         }
@@ -155,5 +169,6 @@ namespace spreadsheetApp
             clone.Alignment = Alignment;
             return clone;
         }
+        
     }
 }

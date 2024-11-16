@@ -124,6 +124,9 @@
   <data name="copyIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\copyIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="leftAlignIcon4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\Debug\leftAlignIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="backgroundColorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\backgroundColorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -132,6 +135,9 @@
   </data>
   <data name="cutIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\cutIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="opsIcons" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\Debug\opsIcons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="centerAlignIcon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\centerAlignIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -166,7 +172,7 @@
   <data name="centerAlignIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\Debug\centerAlignIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="leftAlignIcon4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\Debug\leftAlignIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="opsIcons1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\Debug\opsIcons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
