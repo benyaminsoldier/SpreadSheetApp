@@ -8,6 +8,6 @@ namespace spreadsheetApp
 {
     public class ColorChosenEventArgs : EventArgs
     {
-        public Color ChosenColor { get; set; }
+        public Color ChosenColor { get; set; }          
     }
 }

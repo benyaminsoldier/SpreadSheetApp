@@ -125,9 +125,52 @@ namespace spreadsheetApp
         //Validation could go here...
         //Returns the infix exp but tokenized.
 
-        // PRIVATE METHODS
-        //
-        //
+
+        private static bool ValidateExpEnd(char[] expArr)
+        {
+            if (Operator.IsOperator(expArr[expArr.Length - 1])) return false;
+            return true;
+        }
+        private static int FindInvalidParentheses(char[] expArr)
+        {
+            int j = 0;
+            for ( j = 0; j < expArr.Length; j++)
+            {
+                if (expArr[0] == '(') continue;
+                if (expArr[j] == '(' && !Operator.IsOperator(expArr[j - 1])) return j;
+
+            }
+            
+            for (  j = 0; j < expArr.Length; j++)
+            {
+                if (expArr[expArr.Length - 1] == ')') continue;
+                if (expArr[j] == ')' && !Operator.IsOperator(expArr[j + 1])) return j;
+            }
+
+            j = -1;
+            int lp = 0, rp = 0, i = 1; 
+            bool jchanged = false;
+            foreach (var num in expArr)
+            {
+                if (num == '(')
+                {
+                    lp++;
+                    if (!jchanged)
+                    {
+                        j = i;
+                        jchanged = true;
+                    }
+
+                }
+
+                else if (num == ')') rp++;
+
+                i++;
+            }          
+            if (lp - rp == 0) return -1;
+            else return j;
+            
+        }
         private static bool _validateParentheses(char[] expArr)
         {
             bool order = true;
@@ -135,15 +178,16 @@ namespace spreadsheetApp
             for (int j = 0; j < expArr.Length; j++)
             {
                 if (expArr[0] == '(') continue;
-                if (expArr[j] == '(' && !Operator.IsOperator(expArr[j - 1])) order = false;
+                if (expArr[j] == '(' && !Operator.IsOperator(expArr[j - 1])) 
+                    order = false;
 
             }
 
             for (int j = 0; j < expArr.Length; j++)
             {
                 if (expArr[expArr.Length - 1] == ')') continue;
-                if (expArr[j] == ')' && !Operator.IsOperator(expArr[j + 1])) order = false;
-
+                if (expArr[j] == ')' && !Operator.IsOperator(expArr[j + 1])) 
+                    order = false;
             }
 
 
@@ -154,7 +198,8 @@ namespace spreadsheetApp
                 else if (num == ')') rp++;
             }
 
-            if (lp - rp == 0 && order) return true;
+            if (lp - rp == 0 && order) 
+                return true;
 
             return false;
         }
@@ -174,18 +219,22 @@ namespace spreadsheetApp
             return true;
 
         }
-        private static char _getInvalidOperators(char[] expArr)
+        private static int _getInvalidOperators(char[] expArr)
         {
-            char invalidChar='a';
+            int invalidChar= -1;
+            int i = 1;
             foreach (var num in expArr)
             {
                 if (Operator.IsOperator(num) || char.IsDigit(num) || num == '(' || num == ')')
                 {
+                    i++;
                     continue;
                 }
-                else invalidChar = num;
-
-
+                else
+                {
+                    invalidChar = i;
+                    return invalidChar;
+                }
             }
             return invalidChar;
 
@@ -199,21 +248,48 @@ namespace spreadsheetApp
 
             return true;
         }
+        private static int FindIndexExpOrder(char[] expArr)
+        {
+            for (int j = 0; j < expArr.Length; j++)
+                if (Operator.IsOperator(expArr[j]))
+                    if (Operator.IsOperator(expArr[j + 1]))
+                        return (j + 2);
+                    
+            return -1;
+        }
         private static bool _validateDecimals(List<string> tokenizedExp)
         {
             bool state = true;
             tokenizedExp.ForEach((num) =>
             {
-                if (!float.TryParse(num, out float num1))
+                if (!float.TryParse(num, out float num1)) //if not a nummber
                 {
-                    if (!(Operator.IsOperator(num) || num == "(" || num == ")"))
+                    if (!(Operator.IsOperator(num) || num == "(" || num == ")")) //if not an operator
                     {
-                        state = false;
+                        state = false; 
                     }
                 }
 
             });
             return state;
+        }
+        private static int FindIndexInvalidDecimal(List<string> tokenizedExp)
+        {
+            //bool state = true;
+            int i = 0;
+            foreach (string token in tokenizedExp)
+            {
+                if (!float.TryParse(token, out float num1)) //if not a nummber
+                {
+                    if (!(Operator.IsOperator(token) || token == "(" || token == ")")) //if not an operator
+                    {
+                        return i;
+                    }
+                }
+                i++;
+            }
+
+            return i;
         }
         private static Stack<string> _convertListToStack(List<string> list)
         {
@@ -222,10 +298,10 @@ namespace spreadsheetApp
             return stack;
         }
         
-
-        // PUBLIC METHODS
         //
         //
+        //
+        // ----------------------  MAIN  ----------------------------------------
         private static List<string> Tokenize(string input)
         {
             //
@@ -239,15 +315,27 @@ namespace spreadsheetApp
             char[] expArr = input.ToCharArray();
             string substrng = "";
             int numero = 0;
-            if (!_validateParentheses(expArr)) 
-                throw new Exception("Please close parentheses properly");
+
+            if (!_validateParentheses(expArr))
+            {
+                int ic = -1;
+                if (( ic = FindInvalidParentheses(expArr)) != -1)
+                {
+                    throw new InvalidFormulaException("Please close parentheses properly", ic );
+                }
+               
+            }
+                
             if (!_validateOperators(expArr))
             {
-                var ic = _getInvalidOperators(expArr);
-                throw new InvalidFormulaException("This calculator only add,substracts, multiplies and divides", ic);
+                int ic = -1;
+                if((ic = _getInvalidOperators(expArr)) != -1)
+                {
+                    throw new InvalidFormulaException("This calculator only add,substracts, multiplies and divides", ic);
+                }               
             }
-               
-           
+
+            if (!ValidateExpEnd(expArr)) throw new InvalidFormulaException("Expression cannot end in an operator.", expArr.Length);
 
             for (int i = 0; i < expArr.Length;)
             {
@@ -407,8 +495,17 @@ namespace spreadsheetApp
 
             //Final validations that were accomplished much easier with defined numbers and operators. 
             //Some strings validations might be missing regards to algebra operations.
-            if (!_validateExpOrder(infixExp)) throw new Exception("Please do not type one operator after another one.");
-            if (!_validateDecimals(infixExp)) throw new Exception("This calculator is not currently accepting IPs XD");
+            if (!_validateExpOrder(infixExp))
+            {
+                int ic = FindIndexExpOrder(expArr);
+                throw new InvalidFormulaException("Please do not type one operator after another one.", ic);
+            }
+                
+            if (!_validateDecimals(infixExp)) 
+            {
+                var ic = FindIndexInvalidDecimal(infixExp);
+                throw new InvalidFormulaException("This calculator is not currently accepting IPs XD", ic );
+            }
 
 
             return infixExp;

@@ -150,7 +150,39 @@ namespace spreadsheetApp
 
         private void Document_Load(object sender, EventArgs e)
         {
-            colorsPallette2.ChosenColor += (s, e) => { /*SheetCell Method pending*/};
+            colorsPallette1.ChosenColor += (s, e) =>
+            {
+                foreach (var cell in CurrentLayout.SelectedCells)
+                {
+                    if (cell is SheetCell selectedCell)
+                    {
+                        selectedCell.ForeColor = e.ChosenColor;
+                        CurrentLayout.InvalidateCell(selectedCell);
+                    }
+                }
+            };
+            colorsPallette2.ChosenColor += (s, e) =>
+            {
+                foreach (var cell in CurrentLayout.SelectedCells)
+                {
+                    if (cell is SheetCell selectedCell)
+                    {
+                        selectedCell.BackGroundColor = e.ChosenColor;
+                        CurrentLayout.InvalidateCell(selectedCell);
+                    }
+                }
+            };
+            foreach (System.Windows.Forms.Control control in this.Controls)
+            {
+                if (!(control is ColorsPallette))
+                {
+                    control.Click += (s, e) =>
+                    {
+                        colorsPallette1.Visible = false;
+                        colorsPallette2.Visible = false;
+                    };
+                }
+            }
         }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -232,13 +264,67 @@ namespace spreadsheetApp
             }
         }
 
-        private void toolStripSplitButton1_Click(object sender, EventArgs e)
+        private void BackGroundCellFormatBtn_Click(object sender, EventArgs e)
         {
-            
+
             if (colorsPallette2.Visible) colorsPallette2.SendToBack();
             else colorsPallette2.BringToFront();
 
             colorsPallette2.Visible = !colorsPallette2.Visible;
+        }
+
+        private void btn_fontColor_Click(object sender, EventArgs e)
+        {
+            if (colorsPallette1.Visible) colorsPallette1.SendToBack();
+            else colorsPallette1.BringToFront();
+
+            colorsPallette1.Visible = !colorsPallette1.Visible;
+        }
+
+        private void btn_leftAlign_Click(object sender, EventArgs e)
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Near;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
+
+        private void btn_centerAlign_Click(object sender, EventArgs e)
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Center;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
+
+        private void btn_rightAlign_Click(object sender, EventArgs e)
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Far;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
+
+        private void avgMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sumMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
