@@ -15,16 +15,12 @@ namespace spreadsheetApp
     {
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
-
-        public string FilePath { get;  set; }
-        
+        public string FilePath { get; set; }
         public DateTime OriginDate { get; set; }
         public DateTime LastModificationDate { get; set; }
-
         public List<DataTable> DataTables { get; set; }
         public List<DataGridView> Layouts { get; set; }
         public DataGridView CurrentLayout { get; set; }
-
         public DataTable CurrentDataTable { get; set; }
 
         public Document()
@@ -41,18 +37,18 @@ namespace spreadsheetApp
         {
             DataGridView Sheet = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)Sheet).BeginInit();
-            
-            Sheet.Name = "sheet1";           
+
+            Sheet.Name = "sheet1";
             Sheet.TabIndex = 14;
             Sheet.Dock = DockStyle.Fill;
             Sheet.BackgroundColor = Color.White;
             Sheet.CellBorderStyle = DataGridViewCellBorderStyle.Single;
-            
+
             Sheet.EnableHeadersVisualStyles = false;
             Sheet.RowHeadersWidth = 60;
-            
+
             Sheet.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;           
+            Sheet.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             Sheet.ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
             Sheet.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
             Sheet.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
@@ -62,7 +58,7 @@ namespace spreadsheetApp
             Sheet.AllowUserToDeleteRows = true;
             Sheet.AllowUserToAddRows = true;
             Sheet.AllowUserToResizeColumns = true;
-            
+
             ((System.ComponentModel.ISupportInitialize)Sheet).EndInit();
             Sheet.DataSource = table;
 
@@ -70,7 +66,7 @@ namespace spreadsheetApp
         }
 
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
-        private DataTable CreateEmptyTable(int columns=200, int rows=200)
+        private DataTable CreateEmptyTable(int columns = 200, int rows = 200)
         {
             DataTable Table = new DataTable("sheet 1");
             DataColumn Column;
@@ -101,14 +97,14 @@ namespace spreadsheetApp
                 Column.AllowDBNull = true;
                 Column.DefaultValue = "";
                 Column.MaxLength = 255;
-                
+
                 Table.Columns.Add(Column);
             }
 
-            for(int j=0; j<rows; j++)
+            for (int j = 0; j < rows; j++)
             {
                 Table.Rows.Add(Table.NewRow());
-                
+
 
             }
 
@@ -128,7 +124,7 @@ namespace spreadsheetApp
         }
 
         // adding columns and rows according to user input.
-        public void CreateGrid ()
+        public void CreateGrid()
         {
             DataGridView dataGrid = new DataGridView(); // creating a datagrid.
             dataGrid.Size = new Size(1000, 300); // setting its size.
@@ -137,7 +133,7 @@ namespace spreadsheetApp
             DataTable dataTable = new DataTable(); // creating a datatable will make our life easier later on.
 
             // adding columns to our table. First column act as rows header.
-            dataTable.Columns.Add("*"); 
+            dataTable.Columns.Add("*");
             dataTable.Columns.Add("A");
             dataTable.Columns.Add("B");
             dataTable.Columns.Add("C");
@@ -164,6 +160,67 @@ namespace spreadsheetApp
             dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
             //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
+        }
+
+
+
+        private void cutBtn_Click(object sender, EventArgs e)
+        {
+            
+            // Checks if the cell is selected in the DataGridView
+            
+            if(CurrentLayout.SelectedCells.Count > 0)
+            {
+              
+              DataGridViewCell selectedCell = CurrentLayout.SelectedCells[0]; // Get the selected cell
+
+              string cellContent = selectedCell.Value != null ? selectedCell.Value.ToString():""; // Get the text from the cell 
+
+              Clipboard.SetText(cellContent); // Copy the text from the cell to the clipboard
+
+              selectedCell.Value = "";   // Remove the text from the cell 
+
+            }
+           
+        }
+
+        private void copyBtn_Click(object sender, EventArgs e)
+        {
+
+            if (CurrentLayout.SelectedCells.Count > 0)
+            { 
+      
+                DataGridViewCell selectedCell = CurrentLayout.SelectedCells[0]; 
+
+                string cellContent = selectedCell.Value != null ? selectedCell.Value.ToString() : "";
+
+                Clipboard.SetText(cellContent);
+
+            }
+        }
+
+            private void pasteBtn_Click(object sender, EventArgs e)
+            {
+
+
+            if (CurrentLayout.SelectedCells.Count > 0)
+            {
+
+               // Checks if the clipboard contains any text 
+
+               if (Clipboard.ContainsText())
+                {
+
+                    DataGridViewCell selectedCell = CurrentLayout.SelectedCells[0];
+                      
+                    string getClipboardText = Clipboard.GetText(); // Get the text from the clipboard
+
+                    selectedCell.Value = getClipboardText; // The value of the selected cell equals to value from the clipboard
+
+
+                }
+
+            }
         }
     }
 }
