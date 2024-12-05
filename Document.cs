@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +16,7 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
+        public string FileName { get; set; } = "";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
         public string FilePath { get; set; }
@@ -23,15 +27,22 @@ namespace spreadsheetApp
         public DataGridView CurrentLayout { get; set; }
         public DataTable CurrentDataTable { get; set; }
 
-        public Document()
+        public Document(string name, int numOfRows, int numOfColumns, string filePath)
         {
-            CurrentDataTable = CreateEmptyTable();
+            FileName = name;
+            NumOfRows = numOfRows;
+            NumOfColumns = numOfColumns;
+            FilePath = filePath;
+            OriginDate = DateTime.Now;
+            LastModificationDate = DateTime.Now;
+            CurrentDataTable = new DataSource(numOfRows, numOfColumns);
+            CurrentLayout = new Sheet(CurrentDataTable);
             DataTables = new List<DataTable>() { CurrentDataTable };
-            CurrentLayout = CreateLayoutFrom(CurrentDataTable);
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
+
         // ---------------------------------------------- LAYOUTLOGIC GUI LOGIC DATAGRIDVIEW ----------------------------------------
         private DataGridView CreateLayoutFrom(DataTable table)
         {
@@ -63,35 +74,153 @@ namespace spreadsheetApp
             Sheet.DataSource = table;
 
             return Sheet;
+
+        public Document(string name, int numOfRows, int numOfColumns, string filePath, SpreadsheetDocument fileToBeOpened)
+        {
+            FileName = name;
+            NumOfRows = numOfRows;
+            NumOfColumns = numOfColumns;
+            FilePath = filePath;
+            OriginDate = DateTime.Now;
+            LastModificationDate = DateTime.Now;
+            CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
+            //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
+            CurrentLayout = new Sheet(CurrentDataTable);
+            DataTables = new List<DataTable>() { CurrentDataTable };
+            Layouts = new List<DataGridView>() { CurrentLayout };
+            DisplayLayout(CurrentLayout);
+            InitializeComponent();
+
         }
 
+
+
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
+
         private DataTable CreateEmptyTable(int columns = 200, int rows = 200)
+
+
+        //private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
+        //{
+        //    DataTable tableToFill = new DataTable();
+        //    tableToFill = AddColumnHeaderToTable(tableToFill);
+
+        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
+        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
+        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
+
+        //    var rows = worksheetPart.Worksheet.Descendants<Row>();
+
+        //    foreach (Row row in rows)
+        //    {
+        //        DataRow dataRow = tableToFill.NewRow();
+        //        int columnIndex = 0;
+
+        //        foreach (Cell cell in row.Descendants<Cell>())
+        //        {
+        //            string cellValue = GetCellValue(workbookPart, cell);
+        //            if (columnIndex < tableToFill.Columns.Count)
+        //            {
+        //                dataRow[columnIndex] = cellValue;
+        //            }
+        //            columnIndex++;
+        //        }
+        //        tableToFill.Rows.Add(dataRow);
+        //    }
+        //    return tableToFill;
+        //}
+
+        //private DataTable AddColumnHeaderToTable(DataTable table)
+        //{
+        //    DataColumn Column;
+        //    string columnName = "";
+        //    for (int i = 1; i < NumOfColumns; i++)
+        //    {
+        //        if (i <= 26)
+        //        {
+        //            // First 26 columns are just A-Z.
+        //            columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
+        //            Column = new DataColumn(columnName);
+        //        }
+        //        else
+        //        {
+        //            // For columns beyond Z (i.e., AA, AB, etc.)
+        //            int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
+        //            int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
+        //            // Combine the prefix and suffix to get AA, AB, etc.
+        //            columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
+        //            Column = new DataColumn(columnName);
+        //        }
+        //        Column.DataType = typeof(string);
+        //        Column.AllowDBNull = true;
+        //        Column.DefaultValue = "";
+        //        Column.MaxLength = 255;
+        //        table.Columns.Add(Column);
+        //    }
+        //    return table;
+        //}
+        private string GetCellValue(WorkbookPart workbookPart, Cell cell)
+
         {
-            DataTable Table = new DataTable("sheet 1");
-            DataColumn Column;
+            if (cell == null || cell.CellValue == null)
+                return string.Empty;
 
-            string columnName = "";
-
-            for (int i = 1; i < columns; i++)
+            // If the cell contains a shared string, retrieve the value from the shared string table
+            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
-                if (i <= 26)
-                {
-                    // First 26 columns are just A-Z
+                var sharedStringTable = workbookPart.SharedStringTablePart.SharedStringTable;
+                return sharedStringTable.ElementAt(int.Parse(cell.CellValue.InnerText)).InnerText;
+            }
+            else
+            {
+                return cell.CellValue.InnerText;
+            }
+        }
+        private void DisplayLayout(DataGridView sheet)
+        {
+            Controls.Add(sheet);
+            sheet.Focus();
+        }
+        public void Display()
+        {
+            this.Show();
+        }
 
-                    columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z
-                    Column = new DataColumn(columnName);
-                }
-                else
+        private void Document_Load(object sender, EventArgs e)
+        {
+            colorsPallette1.ChosenColor += (s, e) =>
+            {
+                foreach (var cell in CurrentLayout.SelectedCells)
                 {
-                    // For columns beyond Z (i.e., AA, AB, etc.)
-                    int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
-                    int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
-
-                    // Combine the prefix and suffix to get AA, AB, etc.
-                    columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
-                    Column = new DataColumn(columnName);
+                    if (cell is SheetCell selectedCell)
+                    {
+                        selectedCell.ForeColor = e.ChosenColor;
+                        CurrentLayout.InvalidateCell(selectedCell);
+                    }
                 }
+            };
+            colorsPallette2.ChosenColor += (s, e) =>
+            {
+                foreach (var cell in CurrentLayout.SelectedCells)
+                {
+                    if (cell is SheetCell selectedCell)
+                    {
+                        selectedCell.BackGroundColor = e.ChosenColor;
+                        CurrentLayout.InvalidateCell(selectedCell);
+                    }
+                }
+            };
+            foreach (System.Windows.Forms.Control control in this.Controls)
+            {
+                if (!(control is ColorsPallette))
+                {
+                    control.Click += (s, e) =>
+                    {
+                        colorsPallette1.Visible = false;
+                        colorsPallette2.Visible = false;
+                    };
+                }
+
 
                 Column.DataType = typeof(string);
                 Column.AllowDBNull = true;
@@ -99,38 +228,141 @@ namespace spreadsheetApp
                 Column.MaxLength = 255;
 
                 Table.Columns.Add(Column);
+
             }
+        }
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
 
             for (int j = 0; j < rows; j++)
             {
                 Table.Rows.Add(Table.NewRow());
 
+=======
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "";
+                //sfd.Filter = "Excel|*.xlsx";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    // USING OPENXML
+                    using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                    {
+                        WorkbookPart workbookPart = doc.AddWorkbookPart();
+                        workbookPart.Workbook = new Workbook();
+                        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                        worksheetPart.Worksheet = new Worksheet(new SheetData());
+                        Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                        DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                        sheets.Append(sheet);
+                        SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+
+                        // Write DataTable rows
+                        foreach (DataRow dataRow in this.CurrentDataTable.Rows)
+                        {
+                            Row newRow = new Row();
+                            foreach (var item in dataRow.ItemArray)
+                            {
+                                Cell cell = new Cell
+                                {
+                                    DataType = CellValues.String,
+                                    CellValue = new CellValue(item.ToString())
+                                };
+                                newRow.AppendChild(cell);
+                            }
+                            sheetData.AppendChild(newRow);
+                        }
+                        workbookPart.Workbook.Save();
+                    }
+                }
+            }
+        }
+
+        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
+        {
+            colorsPallette2.BringToFront();
+        }
+
+        public class DocParams
+        {
+            private string title;
+            private int rows;
+            private int columns;
+            public string Title { get => title; set => title = validateTitle(value); }
+            public int Rows { get => rows; set => rows = validateRows(value); }
+            public int Columns { get => columns; set => columns = validateCols(value); }
+            public DocParams()
+            {
+                title = "Document1";
+                rows = 12;
+                columns = 12;
+            }
+            private string validateTitle(string title)
+            {
+                if (string.IsNullOrEmpty(title)) throw new Exception("Invalid document's title");
+                return title;
+            }
+            private int validateRows(int rows)
+            {
+                if (int.IsPositive(rows)) return rows;
+                else throw new Exception("Invalid number of rows");
 
             }
+            private int validateCols(int cols)
+            {
+                if (int.IsPositive(cols)) return cols;
+                else throw new Exception("Invalid number of columns");
 
-            return Table;
+            }
         }
 
-
-        private void DisplayLayout(DataGridView sheet)
+        private void BackGroundCellFormatBtn_Click(object sender, EventArgs e)
         {
-            Controls.Add(sheet);
-            sheet.Focus();
+
+            if (colorsPallette2.Visible) colorsPallette2.SendToBack();
+            else colorsPallette2.BringToFront();
+
+            colorsPallette2.Visible = !colorsPallette2.Visible;
         }
 
-        public void Display()
+        private void btn_fontColor_Click(object sender, EventArgs e)
         {
-            this.Show();
+            if (colorsPallette1.Visible) colorsPallette1.SendToBack();
+            else colorsPallette1.BringToFront();
+
+            colorsPallette1.Visible = !colorsPallette1.Visible;
         }
 
         // adding columns and rows according to user input.
         public void CreateGrid()
-        {
-            DataGridView dataGrid = new DataGridView(); // creating a datagrid.
-            dataGrid.Size = new Size(1000, 300); // setting its size.
-            dataGrid.Location = new Point(0, 60); // setting its location.
+     
+        private void btn_leftAlign_Click(object sender, EventArgs e)
 
-            DataTable dataTable = new DataTable(); // creating a datatable will make our life easier later on.
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Near;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
+
+        private void btn_centerAlign_Click(object sender, EventArgs e)
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Center;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
+
 
             // adding columns to our table. First column act as rows header.
             dataTable.Columns.Add("*");
@@ -139,27 +371,27 @@ namespace spreadsheetApp
             dataTable.Columns.Add("C");
             dataTable.Columns.Add("D");
 
-            // adding rows to the DataTable.
-            dataTable.Rows.Add("1");
-            dataTable.Rows.Add("2");
-            dataTable.Rows.Add("3");
-            dataTable.Rows.Add("4");
-            dataTable.Rows.Add("5");
-            dataTable.Rows.Add("6");
-            dataTable.Rows.Add("7");
-            dataTable.Rows.Add("8");
+        private void btn_rightAlign_Click(object sender, EventArgs e)
+        {
+            foreach (var cell in CurrentLayout.SelectedCells)
+            {
+                if (cell is SheetCell selectedCell)
+                {
+                    selectedCell.Alignment = System.Drawing.StringAlignment.Far;
+                    CurrentLayout.InvalidateCell(selectedCell);
+                }
+            }
+        }
 
-            dataGrid.DataSource = dataTable; // attaching datatable to the datagrid.
-            this.Controls.Add(dataGrid); // adding grid to list of controls.
 
-            dataGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // centering the values.
-            dataGrid.RowHeadersVisible = false; // removing first column so the next one will act as row headers.
-            //dataGrid.Columns[].Width = 20;
-            //dataGrid.AllowUserToAddRows = false; // a new row is added by default.
+        private void avgMenuItem_Click(object sender, EventArgs e)
+        {
 
-            dataGrid.Columns[1].Frozen = true; // freezing the first column is not working, further investigation.
-            //dataGrid.Rows[0].HeaderCell.Value = ""; // also not working, don't know why
-            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Auto-size columns, could not do the same for rows.
+        }
+
+        private void sumMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
 
