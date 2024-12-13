@@ -1,6 +1,11 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System.Xml.Linq;
+using System.IO;
+using System.Windows.Forms;
+using System;
+using System.Linq;
+
 
 namespace spreadsheetApp
 {
@@ -15,7 +20,7 @@ namespace spreadsheetApp
         private Document.DocParams Params { get; set; } 
         public int NumOfRows { get; set; } = 0;
         public int NumOfCols { get; set; } = 0;
-        
+
         public SpreadsheetApp()
         {
             filePath = "";
@@ -30,7 +35,7 @@ namespace spreadsheetApp
             PopUpForm popup = new PopUpForm(Params); // to ask the user how many rows and columns and if he wants to name the sheet.
             if(popup.ShowDialog() == DialogResult.OK)
             {
-                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath);
+                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath, this); // "this" in the current instance of this class that will be used to control "closeToolStripMenuItem1_Click"
                 Files.Add(newDocument);
                 newDocument.Display();
                 documentsCount++;
@@ -44,12 +49,14 @@ namespace spreadsheetApp
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
                     ofd.FileName = "";
-                    //ofd.Filter = "Excel | (*.xlsx)";
-                    if (ofd.ShowDialog() == DialogResult.OK)
+                    // ofd.Filter = "Excel | (*.xlsx)"; 
+                    ofd.Filter = "Arquivos Excel (*.xlsx;*.xls)|*.xlsx;*.xls"; // Patricia
+                    ofd.Title = "Select an Excel file"; // Patricia
 
-                    {
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    { 
                         //using (StreamReader sr = new StreamReader(ofd.FileName))
-                        // I THINK WE DONOT NEED STREAMREADER, RIGHT? WE'RE NOT READING NOTEPAD FILES.
+                        // I THINK WE DO NOT NEED STREAMREADER, RIGHT? WE'RE NOT READING NOTEPAD FILES.
 
                         // USING OPENXML
                         using (SpreadsheetDocument doc = SpreadsheetDocument.Open(ofd.FileName, false))
@@ -60,22 +67,23 @@ namespace spreadsheetApp
                             SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
                             NumOfRows = worksheetPart.Worksheet.Descendants<Row>().Count();
                             Row FirstRow = worksheetPart.Worksheet.Descendants<Row>().FirstOrDefault();
-                            if (FirstRow != null) 
+                            if (FirstRow != null)
                             {
                                 NumOfCols = FirstRow.Descendants<Cell>().Count();
-                            } else
+                            }
+                            else
                             {
                                 NumOfCols = 0;
                             }
                             if (NumOfCols == 0 && NumOfRows == 0)
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, 50, 50, filePath);
+                                Document newOpenedDocument = new Document(ofd.FileName, 50, 50, filePath, this); // "this" in the current instance of this class that will be used to control "closeToolStripMenuItem1_Click"
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }
                             else
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols, filePath, doc);
+                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols, filePath, doc, this); // "this" in the current instance of this class that will be used to control "closeToolStripMenuItem1_Click"
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }
@@ -92,5 +100,6 @@ namespace spreadsheetApp
                 }
             }
         }
+
     }
 }
