@@ -50,7 +50,7 @@ namespace spreadsheetApp
                 {
                     ofd.FileName = "";
                     // ofd.Filter = "Excel | (*.xlsx)"; 
-                    ofd.Filter = "Arquivos Excel (*.xlsx;*.xls)|*.xlsx;*.xls"; // Patricia
+                    ofd.Filter = "Excel Files (*.xlsx;*.xls)|*.xlsx;*.xls"; // Patricia
                     ofd.Title = "Select an Excel file"; // Patricia
 
                     if (ofd.ShowDialog() == DialogResult.OK)

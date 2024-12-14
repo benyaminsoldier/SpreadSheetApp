@@ -20,8 +20,8 @@ namespace spreadsheetApp
         public DataGridView CurrentLayout { get; set; }
         public DataTable CurrentDataTable { get; set; }
 
-        private SpreadsheetApp initialForm; // Patricia - evento close - teste
-        public Document(string name, int numOfRows, int numOfColumns, string filePath, SpreadsheetApp initialForm) // SpreadsheetApp initialForm - Paticia p/teste
+        private SpreadsheetApp initialForm; // Patricia - to be used to close the current form, not the full aplication
+        public Document(string name, int numOfRows, int numOfColumns, string filePath, SpreadsheetApp initialForm) // SpreadsheetApp initialForm - Patricia
         {
             FileName = name;
             NumOfRows = numOfRows;
@@ -31,7 +31,13 @@ namespace spreadsheetApp
             LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(numOfRows, numOfColumns);
             CurrentLayout = new Sheet(CurrentDataTable);
-            CurrentLayout.KeyDown += CurrentLayout_KeyDown; // to permit delete values typed wrongly - Patricia
+
+            /* Begin - Patricia */
+            CurrentLayout.KeyDown += CurrentLayout_KeyDown; // To manipulate windows keys freely
+            CurrentLayout.MultiSelect = true; // permit multi selection of cell 
+            CurrentLayout.SelectionMode = DataGridViewSelectionMode.CellSelect;  // permit multi selection of cell
+            CurrentLayout.SelectionChanged += CurrentLayout_SelectionChanged; // to permit moving arrows for all sides so that user can select more than 1 cell by using <shift> + arrows 
+            /* End - Patricia */
 
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
@@ -52,7 +58,14 @@ namespace spreadsheetApp
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
             //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
             CurrentLayout = new Sheet(CurrentDataTable);
-            CurrentLayout.KeyDown += CurrentLayout_KeyDown; // to permit delete values typed wrongly - Patricia
+
+            /* Begin - Patricia */
+            CurrentLayout.KeyDown += CurrentLayout_KeyDown; // to permit deleting values typed wrongly
+            CurrentLayout.MultiSelect = true; // permit multi selection of cell 
+            CurrentLayout.SelectionMode = DataGridViewSelectionMode.CellSelect;  // permit multi selection of cell
+            CurrentLayout.SelectionChanged += CurrentLayout_SelectionChanged; // to permit moving arrows for all sides so that user can select more than 1 cell by using <shift> + arrows 
+            /* End - Patricia */
+
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
@@ -242,7 +255,7 @@ namespace spreadsheetApp
         //    }
         //}
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) // Patricia
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) // Patricia - SAVE AS
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
@@ -509,17 +522,40 @@ namespace spreadsheetApp
             initialForm.Show();
         }
 
-        private void CurrentLayout_KeyDown(object sender, KeyEventArgs e) // Patricia
+        private void CurrentLayout_KeyDown(object sender, KeyEventArgs e) // Patricia - Manipulation of keys like Op.System Windows does
         {
+            // Allow DataGridView works multi selection of cells by using <SHIFT> + Arrows
+            if (e.Shift && (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right))
+            {
+                e.Handled = false; 
+                return;
+            }
+
+            // Allow user to move freely over cells 
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            {
+                e.Handled = false;
+                return;
+            }
+
+            // Deselect all cells when <ESC> is pressed
+            if (e.KeyCode == Keys.Escape)
+            {
+                CurrentLayout.ClearSelection(); // Remove selection of all cells
+                e.Handled = true;
+                return;
+            }
+
+            // Clean cells and delete by using <BACKSPACE> or <DEL>
             foreach (DataGridViewCell cell in CurrentLayout.SelectedCells)
             {
-                if (!cell.ReadOnly) 
+                if (!cell.ReadOnly)
                 {
-                    if (e.KeyCode == Keys.Delete) // clean completely
+                    if (e.KeyCode == Keys.Delete) // clean cell completely
                     {
                         cell.Value = "";
                     }
-                    else if (e.KeyCode == Keys.Back) // Bakcspace - delete one char by time
+                    else if (e.KeyCode == Keys.Back) // Backspace - delete one char by time
                     {
                         if (cell.Value != null && cell.Value is string cellValue && cellValue.Length > 0)
                         {
@@ -546,6 +582,34 @@ namespace spreadsheetApp
         private void cutBtn_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void CurrentLayout_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Get selected cells from DataGridViewCell to calculate the average
+                var selectedCells = CurrentLayout.SelectedCells.Cast<DataGridViewCell>();
+
+                // Filter only cells with valid numeric values
+                var numericValues = selectedCells
+                    .Where(cell => double.TryParse(cell.Value?.ToString(), out _))
+                    .Select(cell => double.Parse(cell.Value.ToString()));
+
+                if (!numericValues.Any())
+                {
+                    Console.WriteLine("No numeric cell was selected");
+                    return;
+                }
+
+                double average = numericValues.Average();
+
+                Console.WriteLine($"The average is: {average:F2}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error by calculating average: {ex.Message}");
+            }
         }
     }
 }
