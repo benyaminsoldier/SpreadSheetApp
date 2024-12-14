@@ -43,6 +43,7 @@ namespace spreadsheetApp
         }
         public DataSource(SpreadsheetDocument openedFile, int numOfRows, int numOfCols)
         {
+            // firt we'll be creating the columns
             DataColumn Column;
             string columnName = "";
             for (int i = 0; i < numOfCols; i++)
@@ -68,79 +69,46 @@ namespace spreadsheetApp
                 this.Columns.Add(Column);
             }
 
+            // retrieving data from the Spreadsheet document that we wish to open
             WorkbookPart workbookPart = openedFile.WorkbookPart;
-            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
+            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.GetFirstChild<DocumentFormat.OpenXml.Spreadsheet.Sheet>();
             WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
+            Worksheet worksheet = worksheetPart.Worksheet;
 
-            var rows = worksheetPart.Worksheet.Descendants<Row>();
+            // acessing the first sheet and saving its rows in a variable
+            SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+            var rows = sheetData.Elements<Row>();
 
-            //int rowIndex = 0;
-            foreach (Row row in rows)
+            int rowIndex = 0;
+            foreach (Row row in rows) // for each row of the worksheet
             {
                 DataRow dataRow = this.NewRow();
                 int columnIndex = 0;
 
                 foreach (Cell cell in row.Descendants<Cell>())
                 {
-                    string cellValue = GetCellValue(workbookPart, cell);
+                    string cellValue = GetCellValue(cell, workbookPart);
                     if (columnIndex < this.Columns.Count)
                     {
                         dataRow[columnIndex] = cellValue;
                         //this.Rows.Add(dataRow);
                     }
                     columnIndex++;
-
                 }
                 this.Rows.Add(dataRow);
-                //this.Rows[rowIndex].Add(dataRow);
+                Console.WriteLine(this.Rows[0]);
             }
         }
-        private string GetCellValue(WorkbookPart workbookPart, Cell cell)
+        private string GetCellValue(Cell cell, WorkbookPart workbookPart)
         {
-            if (cell == null || cell.CellValue == null)
-                return string.Empty;
-
-            // If the cell contains a shared string, retrieve the value from the shared string table
+            string value = cell.CellValue?.Text;
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
-                var sharedStringTable = workbookPart.SharedStringTablePart.SharedStringTable;
-                return sharedStringTable.ElementAt(int.Parse(cell.CellValue.InnerText)).InnerText;
+                // Handle shared strings
+                SharedStringTablePart sharedStringPart = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
+                return sharedStringPart.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
             }
-            else
-            {
-                return cell.CellValue.InnerText;
-            }
+            return value;
         }
-        //public DataTable TransferDataToTable(SpreadsheetDocument openedFile, int numOfRows, int numOfCols)
-        //{
-        //    DataSource dataSource = new DataSource(numOfRows, numOfCols);
-        //    //DataTable tableToFill = new DataTable();
-        //    //tableToFill = AddColumnHeaderToTable(tableToFill);
-
-        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
-        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
-        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-
-        //    var rows = worksheetPart.Worksheet.Descendants<Row>();
-
-        //    foreach (Row row in rows)
-        //    {
-        //        DataRow dataRow = dataSource.NewRow();
-        //        int columnIndex = 0;
-
-        //        foreach (Cell cell in row.Descendants<Cell>())
-        //        {
-        //            string cellValue = GetCellValue(workbookPart, cell);
-        //            if (columnIndex < dataSource.Columns.Count)
-        //            {
-        //                dataRow[columnIndex] = cellValue;
-        //            }
-        //            columnIndex++;
-        //        }
-        //        dataSource.Rows.Add(dataRow);
-        //    }
-        //    return dataSource;
-        //}
-
     }
 }

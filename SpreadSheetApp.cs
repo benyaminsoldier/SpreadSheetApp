@@ -69,7 +69,7 @@ namespace spreadsheetApp
                             }
                             if (NumOfCols == 0 && NumOfRows == 0)
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, 50, 50, filePath);
+                                Document newOpenedDocument = new Document(ofd.FileName, 30, 10, filePath);
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }

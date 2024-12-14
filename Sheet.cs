@@ -30,6 +30,9 @@ namespace spreadsheetApp
             AllowUserToResizeColumns = true;
             MultiSelect = true;
 
+            AutoGenerateColumns = true; // Auto-create columns from DataTable
+            Visible = true;
+
             // this shuts downs the default style.
             EnableHeadersVisualStyles = false;
             CellBorderStyle = DataGridViewCellBorderStyle.Raised;   

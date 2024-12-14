@@ -50,24 +50,34 @@ namespace spreadsheetApp
             FilePath = filePath;
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;
+            //DataTable emptyTable = new DataSource(numOfRows, numOfColumns);
+            //CurrentDataTable = TransferDataToTable(emptyTable, fileToBeOpened);
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
-            //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
+
+            //// debugging
+            Console.WriteLine($"Rows: {CurrentDataTable.Rows.Count}, Columns: {CurrentDataTable.Columns.Count}");
+            foreach (DataRow row in CurrentDataTable.Rows)
+            {
+                foreach (var item in row.ItemArray)
+                {
+                    Console.Write($"{item}  ");
+                }
+                Console.WriteLine();
+            }
+
             CurrentLayout = new Sheet(CurrentDataTable);
+            CurrentLayout.DataSource = CurrentDataTable;
+            CurrentLayout.Refresh(); // Ensure the UI is updated
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
 
-
-
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
-        //private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
+        //public DataTable TransferDataToTable(DataTable emptyTable, SpreadsheetDocument openedFile)
         //{
-        //    DataTable tableToFill = new DataTable();
-        //    tableToFill = AddColumnHeaderToTable(tableToFill);
-
         //    WorkbookPart workbookPart = openedFile.WorkbookPart;
         //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
         //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
@@ -76,68 +86,65 @@ namespace spreadsheetApp
 
         //    foreach (Row row in rows)
         //    {
-        //        DataRow dataRow = tableToFill.NewRow();
+        //        DataRow dataRow = emptyTable.NewRow();
         //        int columnIndex = 0;
 
         //        foreach (Cell cell in row.Descendants<Cell>())
         //        {
-        //            string cellValue = GetCellValue(workbookPart, cell);
-        //            if (columnIndex < tableToFill.Columns.Count)
+        //            string cellValue = GetCellValue(cell, workbookPart);
+        //            if (columnIndex < emptyTable.Columns.Count)
         //            {
         //                dataRow[columnIndex] = cellValue;
         //            }
         //            columnIndex++;
         //        }
-        //        tableToFill.Rows.Add(dataRow);
+        //        emptyTable.Rows.Add(dataRow);
         //    }
-        //    return tableToFill;
+        //    return emptyTable;
         //}
 
-        //private DataTable AddColumnHeaderToTable(DataTable table)
+        //private DataTable TransferDataToTable(DataTable initialTable, SpreadsheetDocument openedFile)
         //{
-        //    DataColumn Column;
-        //    string columnName = "";
-        //    for (int i = 1; i < NumOfColumns; i++)
-        //    {
-        //        if (i <= 26)
-        //        {
-        //            // First 26 columns are just A-Z.
-        //            columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
-        //            Column = new DataColumn(columnName);
-        //        }
-        //        else
-        //        {
-        //            // For columns beyond Z (i.e., AA, AB, etc.)
-        //            int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
-        //            int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
-        //            // Combine the prefix and suffix to get AA, AB, etc.
-        //            columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
-        //            Column = new DataColumn(columnName);
-        //        }
-        //        Column.DataType = typeof(string);
-        //        Column.AllowDBNull = true;
-        //        Column.DefaultValue = "";
-        //        Column.MaxLength = 255;
-        //        table.Columns.Add(Column);
-        //    }
-        //    return table;
-        //}
-        private string GetCellValue(WorkbookPart workbookPart, Cell cell)
-        {
-            if (cell == null || cell.CellValue == null)
-                return string.Empty;
+        //    // retrieving data from the Spreadsheet document that we wish to open
+        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
+        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.GetFirstChild<DocumentFormat.OpenXml.Spreadsheet.Sheet>();
+        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
+        //    Worksheet worksheet = worksheetPart.Worksheet;
 
-            // If the cell contains a shared string, retrieve the value from the shared string table
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-            {
-                var sharedStringTable = workbookPart.SharedStringTablePart.SharedStringTable;
-                return sharedStringTable.ElementAt(int.Parse(cell.CellValue.InnerText)).InnerText;
-            }
-            else
-            {
-                return cell.CellValue.InnerText;
-            }
-        }
+        //    // acessing the first sheet and saving its rows in a variable
+        //    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+        //    var rows = sheetData.Elements<Row>();
+
+        //    int rowIndex = 0;
+        //    foreach (Row row in rows) // for each row of the worksheet
+        //    {
+        //        DataRow dataRow = initialTable.NewRow();
+        //        int columnIndex = 0;
+
+        //        foreach (Cell cell in row.Descendants<Cell>())
+        //        {
+        //            string cellValue = GetCellValue(cell, workbookPart);
+        //            if (columnIndex < initialTable.Columns.Count)
+        //            {
+        //                dataRow[columnIndex] = cellValue;
+        //            }
+        //            columnIndex++;
+        //        }
+        //        initialTable.Rows.Add(dataRow);
+        //    }
+        //    return initialTable;
+        //}
+        //private string GetCellValue(Cell cell, WorkbookPart workbookPart)
+        //{
+        //    string value = cell.CellValue?.Text;
+        //    if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+        //    {
+        //        // Handle shared strings
+        //        SharedStringTablePart sharedStringPart = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
+        //        return sharedStringPart.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
+        //    }
+        //    return value;
+        //}
         private void DisplayLayout(DataGridView sheet)
         {
             Controls.Add(sheet);
