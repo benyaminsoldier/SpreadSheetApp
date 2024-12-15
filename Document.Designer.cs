@@ -44,6 +44,9 @@
             btn_centerAlign = new ToolStripButton();
             btn_rightAlign = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
+            toolStripButton1 = new ToolStripDropDownButton();
+            avgMenuItem = new ToolStripMenuItem();
+            sumMenuItem = new ToolStripMenuItem();
             menuBar = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -57,9 +60,6 @@
             colorsPallette2 = new ColorsPallette();
             splitContainer1 = new SplitContainer();
             colorsPallette1 = new ColorsPallette();
-            toolStripButton1 = new ToolStripDropDownButton();
-            avgMenuItem = new ToolStripMenuItem();
-            sumMenuItem = new ToolStripMenuItem();
             toolBar.SuspendLayout();
             menuBar.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -71,9 +71,9 @@
             // 
             toolBar.ImageScalingSize = new Size(24, 24);
             toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, btn_backGroundCellFormat, toolStripSeparator4, btn_fontColor, toolStripSeparator5, btn_leftAlign, btn_centerAlign, btn_rightAlign, toolStripSeparator6, toolStripButton1 });
-            toolBar.Location = new Point(0, 33);
+            toolBar.Location = new Point(0, 24);
             toolBar.Name = "toolBar";
-            toolBar.Size = new Size(1174, 35);
+            toolBar.Size = new Size(822, 33);
             toolBar.TabIndex = 9;
             toolBar.Text = "toolBar";
             // 
@@ -83,13 +83,13 @@
             pasteBtn.Image = Properties.Resources.pasteIcon;
             pasteBtn.ImageTransparentColor = Color.Magenta;
             pasteBtn.Name = "pasteBtn";
-            pasteBtn.Size = new Size(34, 30);
+            pasteBtn.Size = new Size(28, 30);
             pasteBtn.Text = "pasteBtn";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 35);
+            toolStripSeparator1.Size = new Size(6, 33);
             // 
             // copyBtn
             // 
@@ -97,13 +97,13 @@
             copyBtn.Image = Properties.Resources.copyIcon;
             copyBtn.ImageTransparentColor = Color.Magenta;
             copyBtn.Name = "copyBtn";
-            copyBtn.Size = new Size(34, 30);
+            copyBtn.Size = new Size(28, 30);
             copyBtn.Text = "copyBtn";
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 35);
+            toolStripSeparator2.Size = new Size(6, 33);
             // 
             // cutBtn
             // 
@@ -111,13 +111,13 @@
             cutBtn.Image = Properties.Resources.cutIcon;
             cutBtn.ImageTransparentColor = Color.Magenta;
             cutBtn.Name = "cutBtn";
-            cutBtn.Size = new Size(34, 30);
+            cutBtn.Size = new Size(28, 30);
             cutBtn.Text = "cutBtn";
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(6, 35);
+            toolStripSeparator3.Size = new Size(6, 33);
             // 
             // btn_backGroundCellFormat
             // 
@@ -125,14 +125,14 @@
             btn_backGroundCellFormat.Image = Properties.Resources.backgroundColorIcon;
             btn_backGroundCellFormat.ImageTransparentColor = Color.Magenta;
             btn_backGroundCellFormat.Name = "btn_backGroundCellFormat";
-            btn_backGroundCellFormat.Size = new Size(34, 30);
+            btn_backGroundCellFormat.Size = new Size(28, 30);
             btn_backGroundCellFormat.Text = "toolStripSplitButton1";
             btn_backGroundCellFormat.Click += BackGroundCellFormatBtn_Click;
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 35);
+            toolStripSeparator4.Size = new Size(6, 33);
             // 
             // btn_fontColor
             // 
@@ -140,13 +140,13 @@
             btn_fontColor.Image = Properties.Resources.fontColor3;
             btn_fontColor.ImageTransparentColor = Color.Magenta;
             btn_fontColor.Name = "btn_fontColor";
-            btn_fontColor.Size = new Size(34, 30);
+            btn_fontColor.Size = new Size(28, 30);
             btn_fontColor.Click += btn_fontColor_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(6, 35);
+            toolStripSeparator5.Size = new Size(6, 33);
             // 
             // btn_leftAlign
             // 
@@ -154,7 +154,7 @@
             btn_leftAlign.Image = Properties.Resources.leftAlignIcon4;
             btn_leftAlign.ImageTransparentColor = Color.Magenta;
             btn_leftAlign.Name = "btn_leftAlign";
-            btn_leftAlign.Size = new Size(34, 30);
+            btn_leftAlign.Size = new Size(28, 30);
             btn_leftAlign.Click += btn_leftAlign_Click;
             // 
             // btn_centerAlign
@@ -163,7 +163,7 @@
             btn_centerAlign.Image = Properties.Resources.centerAlignIcon1;
             btn_centerAlign.ImageTransparentColor = Color.Magenta;
             btn_centerAlign.Name = "btn_centerAlign";
-            btn_centerAlign.Size = new Size(34, 30);
+            btn_centerAlign.Size = new Size(28, 30);
             btn_centerAlign.Text = "toolStripButton1";
             btn_centerAlign.Click += btn_centerAlign_Click;
             // 
@@ -174,14 +174,38 @@
             btn_rightAlign.ImageTransparentColor = Color.Magenta;
             btn_rightAlign.Name = "btn_rightAlign";
             btn_rightAlign.Padding = new Padding(1);
-            btn_rightAlign.Size = new Size(34, 30);
+            btn_rightAlign.Size = new Size(30, 30);
             btn_rightAlign.Text = "toolStripButton2";
             btn_rightAlign.Click += btn_rightAlign_Click;
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new Size(6, 35);
+            toolStripSeparator6.Size = new Size(6, 33);
+            // 
+            // toolStripButton1
+            // 
+            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.DropDownItems.AddRange(new ToolStripItem[] { avgMenuItem, sumMenuItem });
+            toolStripButton1.Image = Properties.Resources.opsIcons1;
+            toolStripButton1.ImageTransparentColor = Color.Magenta;
+            toolStripButton1.Name = "toolStripButton1";
+            toolStripButton1.Size = new Size(37, 30);
+            toolStripButton1.Text = "toolStripButton1";
+            // 
+            // avgMenuItem
+            // 
+            avgMenuItem.Name = "avgMenuItem";
+            avgMenuItem.Size = new Size(99, 22);
+            avgMenuItem.Text = "AVG";
+            avgMenuItem.Click += avgMenuItem_Click;
+            // 
+            // sumMenuItem
+            // 
+            sumMenuItem.Name = "sumMenuItem";
+            sumMenuItem.Size = new Size(99, 22);
+            sumMenuItem.Text = "SUM";
+            sumMenuItem.Click += sumMenuItem_Click;
             // 
             // menuBar
             // 
@@ -189,8 +213,8 @@
             menuBar.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuBar.Location = new Point(0, 0);
             menuBar.Name = "menuBar";
-            menuBar.Padding = new Padding(8, 2, 0, 2);
-            menuBar.Size = new Size(1174, 33);
+            menuBar.Padding = new Padding(6, 1, 0, 1);
+            menuBar.Size = new Size(822, 24);
             menuBar.TabIndex = 8;
             menuBar.Text = "menuBar";
             // 
@@ -198,63 +222,64 @@
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(54, 29);
+            fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(188, 34);
+            newToolStripMenuItem.Size = new Size(123, 22);
             newToolStripMenuItem.Text = "New";
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(188, 34);
+            openToolStripMenuItem.Size = new Size(123, 22);
             openToolStripMenuItem.Text = "Open";
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(188, 34);
+            saveToolStripMenuItem.Size = new Size(123, 22);
             saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(188, 34);
+            saveAsToolStripMenuItem.Size = new Size(123, 22);
             saveAsToolStripMenuItem.Text = "Save As...";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // printToolStripMenuItem
             // 
             printToolStripMenuItem.Name = "printToolStripMenuItem";
-            printToolStripMenuItem.Size = new Size(188, 34);
+            printToolStripMenuItem.Size = new Size(123, 22);
             printToolStripMenuItem.Text = "Print";
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(188, 34);
+            exitToolStripMenuItem.Size = new Size(123, 22);
             exitToolStripMenuItem.Text = "Exit";
             // 
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.Controls.Add(btnSheet);
             flowLayoutPanel1.Dock = DockStyle.Bottom;
-            flowLayoutPanel1.Location = new Point(0, 504);
-            flowLayoutPanel1.Margin = new Padding(4);
+            flowLayoutPanel1.Location = new Point(0, 302);
+            flowLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(1174, 58);
+            flowLayoutPanel1.Size = new Size(822, 35);
             flowLayoutPanel1.TabIndex = 15;
             // 
             // btnSheet
             // 
             btnSheet.AutoSize = true;
-            btnSheet.Location = new Point(4, 4);
-            btnSheet.Margin = new Padding(4);
+            btnSheet.Location = new Point(3, 2);
+            btnSheet.Margin = new Padding(3, 2, 3, 2);
             btnSheet.Name = "btnSheet";
-            btnSheet.Size = new Size(186, 44);
+            btnSheet.Size = new Size(130, 26);
             btnSheet.TabIndex = 4;
             btnSheet.Text = "Sheet 1";
             btnSheet.UseVisualStyleBackColor = true;
@@ -264,20 +289,22 @@
             colorsPallette2.BackColor = SystemColors.ControlLightLight;
             colorsPallette2.Colors = (List<Color>)resources.GetObject("colorsPallette2.Colors");
             colorsPallette2.CurrentColor = Color.Empty;
-            colorsPallette2.Location = new Point(133, 66);
+            colorsPallette2.Location = new Point(93, 40);
             colorsPallette2.Margin = new Padding(0);
             colorsPallette2.Name = "colorsPallette2";
             colorsPallette2.Padding = new Padding(1);
-            colorsPallette2.Size = new Size(273, 238);
+            colorsPallette2.Size = new Size(191, 143);
             colorsPallette2.TabIndex = 16;
             colorsPallette2.Visible = false;
             // 
             // splitContainer1
             // 
-            splitContainer1.Location = new Point(293, 418);
+            splitContainer1.Location = new Point(205, 251);
+            splitContainer1.Margin = new Padding(2);
             splitContainer1.Name = "splitContainer1";
-            splitContainer1.Size = new Size(225, 150);
-            splitContainer1.SplitterDistance = 75;
+            splitContainer1.Size = new Size(158, 90);
+            splitContainer1.SplitterDistance = 52;
+            splitContainer1.SplitterWidth = 3;
             splitContainer1.TabIndex = 17;
             // 
             // colorsPallette1
@@ -285,52 +312,28 @@
             colorsPallette1.BackColor = SystemColors.ControlLightLight;
             colorsPallette1.Colors = (List<Color>)resources.GetObject("colorsPallette1.Colors");
             colorsPallette1.CurrentColor = Color.Empty;
-            colorsPallette1.Location = new Point(172, 66);
+            colorsPallette1.Location = new Point(120, 40);
             colorsPallette1.Margin = new Padding(0);
             colorsPallette1.Name = "colorsPallette1";
             colorsPallette1.Padding = new Padding(1);
-            colorsPallette1.Size = new Size(273, 238);
+            colorsPallette1.Size = new Size(191, 143);
             colorsPallette1.TabIndex = 18;
             colorsPallette1.Visible = false;
             // 
-            // toolStripButton1
-            // 
-            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButton1.DropDownItems.AddRange(new ToolStripItem[] { avgMenuItem, sumMenuItem });
-            toolStripButton1.Image = Properties.Resources.opsIcons1;
-            toolStripButton1.ImageTransparentColor = Color.Magenta;
-            toolStripButton1.Name = "toolStripButton1";
-            toolStripButton1.Size = new Size(42, 30);
-            toolStripButton1.Text = "toolStripButton1";
-            // 
-            // avgMenuItem
-            // 
-            avgMenuItem.Name = "avgMenuItem";
-            avgMenuItem.Size = new Size(270, 34);
-            avgMenuItem.Text = "AVG";
-            avgMenuItem.Click += avgMenuItem_Click;
-            // 
-            // sumMenuItem
-            // 
-            sumMenuItem.Name = "sumMenuItem";
-            sumMenuItem.Size = new Size(270, 34);
-            sumMenuItem.Text = "SUM";
-            sumMenuItem.Click += sumMenuItem_Click;
-            // 
             // Document
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1174, 562);
+            ClientSize = new Size(822, 337);
             Controls.Add(colorsPallette1);
             Controls.Add(splitContainer1);
             Controls.Add(colorsPallette2);
             Controls.Add(flowLayoutPanel1);
             Controls.Add(toolBar);
             Controls.Add(menuBar);
-            Margin = new Padding(4);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "Document";
-            Text = "Doc";
+            Text = "Untitled";
             Load += Document_Load;
             toolBar.ResumeLayout(false);
             toolBar.PerformLayout();

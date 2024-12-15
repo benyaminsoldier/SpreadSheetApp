@@ -13,7 +13,6 @@ namespace spreadsheetApp
     public partial class PopUpForm : Form
     {
         public Document.DocParams Params {  get; set; }
-   
         public PopUpForm(Document.DocParams docParams)
         {
             Params = docParams;
@@ -21,7 +20,6 @@ namespace spreadsheetApp
         }
         private void BtnCreateDoc_Click(object sender, EventArgs e)
         {
-
             try
             {
                 Params.Title = docNameInput.Text;

@@ -51,93 +51,23 @@ namespace spreadsheetApp
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
-            //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
+            Console.WriteLine($"Rows: {CurrentDataTable.Rows.Count}, Columns: {CurrentDataTable.Columns.Count}");
+            foreach (DataRow row in CurrentDataTable.Rows)
+            {
+                foreach (var item in row.ItemArray)
+                {
+                    Console.Write($"{item}  ");
+                }
+                Console.WriteLine();
+            }
             CurrentLayout = new Sheet(CurrentDataTable);
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
-
-        //demo com
-
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
-        //private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
-        //{
-        //    DataTable tableToFill = new DataTable();
-        //    tableToFill = AddColumnHeaderToTable(tableToFill);
-
-        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
-        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
-        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-
-        //    var rows = worksheetPart.Worksheet.Descendants<Row>();
-
-        //    foreach (Row row in rows)
-        //    {
-        //        DataRow dataRow = tableToFill.NewRow();
-        //        int columnIndex = 0;
-
-        //        foreach (Cell cell in row.Descendants<Cell>())
-        //        {
-        //            string cellValue = GetCellValue(workbookPart, cell);
-        //            if (columnIndex < tableToFill.Columns.Count)
-        //            {
-        //                dataRow[columnIndex] = cellValue;
-        //            }
-        //            columnIndex++;
-        //        }
-        //        tableToFill.Rows.Add(dataRow);
-        //    }
-        //    return tableToFill;
-        //}
-
-        //private DataTable AddColumnHeaderToTable(DataTable table)
-        //{
-        //    DataColumn Column;
-        //    string columnName = "";
-        //    for (int i = 1; i < NumOfColumns; i++)
-        //    {
-        //        if (i <= 26)
-        //        {
-        //            // First 26 columns are just A-Z.
-        //            columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
-        //            Column = new DataColumn(columnName);
-        //        }
-        //        else
-        //        {
-        //            // For columns beyond Z (i.e., AA, AB, etc.)
-        //            int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
-        //            int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
-        //            // Combine the prefix and suffix to get AA, AB, etc.
-        //            columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
-        //            Column = new DataColumn(columnName);
-        //        }
-        //        Column.DataType = typeof(string);
-        //        Column.AllowDBNull = true;
-        //        Column.DefaultValue = "";
-        //        Column.MaxLength = 255;
-        //        table.Columns.Add(Column);
-        //    }
-        //    return table;
-        //}
-        private string GetCellValue(WorkbookPart workbookPart, Cell cell)
-        {
-            if (cell == null || cell.CellValue == null)
-                return string.Empty;
-
-            // If the cell contains a shared string, retrieve the value from the shared string table
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-            {
-                var sharedStringTable = workbookPart.SharedStringTablePart.SharedStringTable;
-                return sharedStringTable.ElementAt(int.Parse(cell.CellValue.InnerText)).InnerText;
-            }
-            else
-            {
-                return cell.CellValue.InnerText;
-            }
-        }
         private void DisplayLayout(DataGridView sheet)
         {
             Controls.Add(sheet);
@@ -189,8 +119,9 @@ namespace spreadsheetApp
 
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                sfd.FileName = "";
-                //sfd.Filter = "Excel|*.xlsx";
+                sfd.Title = "Save File As";
+                sfd.FileName = "Untitled";
+                sfd.Filter = "Excel Files(*.xlsx)| *.xlsx";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     // USING OPENXML

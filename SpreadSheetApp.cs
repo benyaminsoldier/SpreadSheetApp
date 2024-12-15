@@ -3,11 +3,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Xml.Linq;
 
 namespace spreadsheetApp
-{
-
+{ 
     public partial class SpreadsheetApp : Form
-    {
-        
+    { 
         static int documentsCount;
         public string filePath;
         public Document CurrentFile { get; set; }
@@ -23,8 +21,8 @@ namespace spreadsheetApp
             InitializeComponent();
             Files = new List<Document>();   
             Params = new Document.DocParams();
+            this.FormClosing += MainForm_FormClosing; // handling first window being closed.
         }
-        
         private void _btnNew_Click(object sender, EventArgs e)
         {
             PopUpForm popup = new PopUpForm(Params); // to ask the user how many rows and columns and if he wants to name the sheet.
@@ -34,7 +32,6 @@ namespace spreadsheetApp
                 Files.Add(newDocument);
                 newDocument.Display();
                 documentsCount++;
-                //this.Hide();// we cannot close this form because the app will be close, so we're hiding it.
             }            
         }
         private void _btnOpen_Click(object sender, EventArgs e)
@@ -43,14 +40,11 @@ namespace spreadsheetApp
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
+                    ofd.Title = "Open File";
                     ofd.FileName = "";
-                    //ofd.Filter = "Excel | (*.xlsx)";
+                    ofd.Filter = "Excel Files (*.xlsx)|*.xlsx";
                     if (ofd.ShowDialog() == DialogResult.OK)
-
                     {
-                        //using (StreamReader sr = new StreamReader(ofd.FileName))
-                        // I THINK WE DONOT NEED STREAMREADER, RIGHT? WE'RE NOT READING NOTEPAD FILES.
-
                         // USING OPENXML
                         using (SpreadsheetDocument doc = SpreadsheetDocument.Open(ofd.FileName, false))
                         {
@@ -69,7 +63,7 @@ namespace spreadsheetApp
                             }
                             if (NumOfCols == 0 && NumOfRows == 0)
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, 50, 50, filePath);
+                                Document newOpenedDocument = new Document(ofd.FileName, 30, 10, filePath);
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }
@@ -80,16 +74,20 @@ namespace spreadsheetApp
                                 newOpenedDocument.Display();
                             }
                         }
-
-                        // USING NPOI PACKAGE
-                        //File Manager Class Used
-                        //FileManager Class could implement ISave and IOpen interface
-                        //ISave saveFile() will be implemented by child classes
-                        //JsonFileManager or XlsxFileManager implement ISave/IOpen
-                        //Xlsx uses OpenXML or NPOI Library.
-                        //}
                     }
                 }
+            }
+        }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Application.OpenForms.Count > 1) // if the other forms are open, we just hide the initial form.
+            {
+                this.Hide();
+                e.Cancel = true;
+            }
+            else
+            {
+                Application.Exit(); // if it's the last one open, close the application.
             }
         }
     }
