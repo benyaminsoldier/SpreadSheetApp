@@ -3,11 +3,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Xml.Linq;
 
 namespace spreadsheetApp
-{
-
+{ 
     public partial class SpreadsheetApp : Form
-    {
-        
+    { 
         static int documentsCount;
         public string filePath;
         public Document CurrentFile { get; set; }
@@ -23,8 +21,8 @@ namespace spreadsheetApp
             InitializeComponent();
             Files = new List<Document>();   
             Params = new Document.DocParams();
+            this.FormClosing += MainForm_FormClosing; // handling first window being closed.
         }
-        
         private void _btnNew_Click(object sender, EventArgs e)
         {
             PopUpForm popup = new PopUpForm(Params); // to ask the user how many rows and columns and if he wants to name the sheet.
@@ -78,6 +76,18 @@ namespace spreadsheetApp
                         }
                     }
                 }
+            }
+        }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Application.OpenForms.Count > 1) // if the other forms are open, we just hide the initial form.
+            {
+                this.Hide();
+                e.Cancel = true;
+            }
+            else
+            {
+                Application.Exit(); // if it's the last one open, close the application.
             }
         }
     }
