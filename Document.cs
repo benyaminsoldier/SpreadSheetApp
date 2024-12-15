@@ -16,7 +16,7 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
-        public string FileName { get; set; } = "";
+        public string FileName { get; set; } = " ";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
         public string FilePath { get; set; }
@@ -116,16 +116,15 @@ namespace spreadsheetApp
         }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
                 sfd.Title = "Save File As";
-                sfd.FileName = "Untitled";
+                sfd.FileName = ".xlsx";
                 sfd.Filter = "Excel Files(*.xlsx)| *.xlsx";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // USING OPENXML
-                    using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                    FilePath = sfd.FileName;
+                    using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
                     {
                         WorkbookPart workbookPart = doc.AddWorkbookPart();
                         workbookPart.Workbook = new Workbook();
@@ -153,6 +152,44 @@ namespace spreadsheetApp
                         }
                         workbookPart.Workbook.Save();
                     }
+                }
+            }
+        }
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(FilePath))
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+            }
+            else
+            {
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Create(FilePath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
+                {
+                    WorkbookPart workbookPart = doc.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+                    WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    worksheetPart.Worksheet = new Worksheet(new SheetData());
+                    Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                    sheets.Append(sheet);
+                    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                    // Write DataTable rows
+                    foreach (DataRow dataRow in this.CurrentDataTable.Rows)
+                    {
+                        Row newRow = new Row();
+                        foreach (var item in dataRow.ItemArray)
+                        {
+                            Cell cell = new Cell
+                            {
+                                DataType = CellValues.String,
+                                CellValue = new CellValue(item.ToString())
+                            };
+                            newRow.AppendChild(cell);
+                        }
+                        sheetData.AppendChild(newRow);
+                    }
+                    workbookPart.Workbook.Save();
                 }
             }
         }
@@ -257,5 +294,7 @@ namespace spreadsheetApp
         {
 
         }
+
+        
     }
 }
