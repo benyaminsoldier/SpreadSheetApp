@@ -153,20 +153,22 @@ namespace spreadsheetApp
             foreach (Row row in rows) // for each row of the worksheet
             {
                 DataRow dataRow = this.NewRow();
+                dataRow.BeginEdit();
                 int columnIndex = 0;
 
                 foreach (Cell cell in row.Descendants<Cell>())
                 {
                     string cellValue = GetCellValue(cell, workbookPart);
+                    
                     if (columnIndex < this.Columns.Count)
                     {
-                        dataRow[columnIndex] = cellValue;
+                        dataRow[columnIndex] = cellValue.ToString();
                         //this.Rows.Add(dataRow);
                     }
                     columnIndex++;
                 }
-                this.Rows.Add(dataRow);
-                Console.WriteLine(this.Rows[0]);
+                dataRow.EndEdit();
+                this.Rows.Add(dataRow); 
             }
         }
         private string GetCellValue(Cell cell, WorkbookPart workbookPart)

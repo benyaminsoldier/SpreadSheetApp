@@ -50,11 +50,7 @@ namespace spreadsheetApp
             FilePath = filePath;
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;
-            //DataTable emptyTable = new DataSource(numOfRows, numOfColumns);
-            //CurrentDataTable = TransferDataToTable(emptyTable, fileToBeOpened);
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
-
-            //// debugging
             Console.WriteLine($"Rows: {CurrentDataTable.Rows.Count}, Columns: {CurrentDataTable.Columns.Count}");
             foreach (DataRow row in CurrentDataTable.Rows)
             {
@@ -64,10 +60,9 @@ namespace spreadsheetApp
                 }
                 Console.WriteLine();
             }
-
             CurrentLayout = new Sheet(CurrentDataTable);
-            CurrentLayout.DataSource = CurrentDataTable;
-            CurrentLayout.Refresh(); // Ensure the UI is updated
+            //CurrentLayout.DataSource = null;
+            //CurrentLayout.DataSource = CurrentDataTable;
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);

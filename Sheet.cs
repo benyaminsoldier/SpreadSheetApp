@@ -1,5 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Office2016.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -40,7 +42,7 @@ namespace spreadsheetApp
             //COLUMN HEADERS - Default HeaderClass from Grid... needs inheritances for customization
 
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ColumnHeadersDefaultCellStyle.Font = new Font(FontFamily.GenericSansSerif, 8, FontStyle.Regular);
+            ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(System.Drawing.FontFamily.GenericSansSerif, 8, FontStyle.Regular);
             ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.Black;
             ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -54,16 +56,21 @@ namespace spreadsheetApp
 
             DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Transparent;
             DefaultCellStyle.SelectionForeColor = System.Drawing.Color.Red;
-                     
-            //Grid Generation
-            //Try block missed here to handle unmeasured user table sizes
-            
-            foreach (DataColumn column in source.Columns) Columns.Add(new SheetColumn() { HeaderText = column.ColumnName, });
 
-            foreach (DataRow row in source.Rows) Rows.Add(new SheetRow());
+            //Grid Generation
+            foreach (DataColumn column in source.Columns) // creating a datagridview column for each column of the datatable.
+            {
+                SheetColumn sheetCol = new SheetColumn() { HeaderText = column.ColumnName, };
+                Columns.Add(sheetCol);
+            }
+            foreach (DataRow row in source.Rows) // populating DataGrid cells with the 
+            {
+                DataGridViewRow dgRow = ConvertDataRowToDataGridViewRow(row, this);
+                this.Rows.Add(dgRow);
+            }
 
             // EVENTS
-            
+
             EditingControlShowing += ( sender, e) =>
             {
                 e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -91,7 +98,7 @@ namespace spreadsheetApp
                 {                   
                     int xOffSet = 15;
                     if (e.RowIndex > 9) xOffSet = 10;
-                    e.Graphics.DrawString($"{e.RowIndex+1}", new Font("Verdant", 10), sb, new PointF(e.RowBounds.X + xOffSet, e.RowBounds.Y + 5));
+                    e.Graphics.DrawString($"{e.RowIndex+1}", new System.Drawing.Font("Verdant", 10), sb, new PointF(e.RowBounds.X + xOffSet, e.RowBounds.Y + 5));
                 }
             };
 
@@ -131,6 +138,19 @@ namespace spreadsheetApp
             }
             return total / count;    
 
+        }
+        public DataGridViewRow ConvertDataRowToDataGridViewRow(DataRow dataRow, DataGridView dataGridView)
+        {
+            DataGridViewRow gridRow = new DataGridViewRow();
+            gridRow.CreateCells(dataGridView);
+
+            // Copy values from DataRow to DataGridViewRow
+            for (int i = 0; i < dataRow.ItemArray.Length; i++)
+            {
+                gridRow.Cells[i].Value = dataRow[i];
+            }
+
+            return gridRow;
         }
     }
 }
