@@ -61,8 +61,6 @@ namespace spreadsheetApp
                 Console.WriteLine();
             }
             CurrentLayout = new Sheet(CurrentDataTable);
-            //CurrentLayout.DataSource = null;
-            //CurrentLayout.DataSource = CurrentDataTable;
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
@@ -71,75 +69,6 @@ namespace spreadsheetApp
 
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
-        //public DataTable TransferDataToTable(DataTable emptyTable, SpreadsheetDocument openedFile)
-        //{
-        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
-        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
-        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-
-        //    var rows = worksheetPart.Worksheet.Descendants<Row>();
-
-        //    foreach (Row row in rows)
-        //    {
-        //        DataRow dataRow = emptyTable.NewRow();
-        //        int columnIndex = 0;
-
-        //        foreach (Cell cell in row.Descendants<Cell>())
-        //        {
-        //            string cellValue = GetCellValue(cell, workbookPart);
-        //            if (columnIndex < emptyTable.Columns.Count)
-        //            {
-        //                dataRow[columnIndex] = cellValue;
-        //            }
-        //            columnIndex++;
-        //        }
-        //        emptyTable.Rows.Add(dataRow);
-        //    }
-        //    return emptyTable;
-        //}
-
-        //private DataTable TransferDataToTable(DataTable initialTable, SpreadsheetDocument openedFile)
-        //{
-        //    // retrieving data from the Spreadsheet document that we wish to open
-        //    WorkbookPart workbookPart = openedFile.WorkbookPart;
-        //    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.GetFirstChild<DocumentFormat.OpenXml.Spreadsheet.Sheet>();
-        //    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-        //    Worksheet worksheet = worksheetPart.Worksheet;
-
-        //    // acessing the first sheet and saving its rows in a variable
-        //    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-        //    var rows = sheetData.Elements<Row>();
-
-        //    int rowIndex = 0;
-        //    foreach (Row row in rows) // for each row of the worksheet
-        //    {
-        //        DataRow dataRow = initialTable.NewRow();
-        //        int columnIndex = 0;
-
-        //        foreach (Cell cell in row.Descendants<Cell>())
-        //        {
-        //            string cellValue = GetCellValue(cell, workbookPart);
-        //            if (columnIndex < initialTable.Columns.Count)
-        //            {
-        //                dataRow[columnIndex] = cellValue;
-        //            }
-        //            columnIndex++;
-        //        }
-        //        initialTable.Rows.Add(dataRow);
-        //    }
-        //    return initialTable;
-        //}
-        //private string GetCellValue(Cell cell, WorkbookPart workbookPart)
-        //{
-        //    string value = cell.CellValue?.Text;
-        //    if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-        //    {
-        //        // Handle shared strings
-        //        SharedStringTablePart sharedStringPart = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
-        //        return sharedStringPart.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
-        //    }
-        //    return value;
-        //}
         private void DisplayLayout(DataGridView sheet)
         {
             Controls.Add(sheet);
@@ -191,8 +120,9 @@ namespace spreadsheetApp
 
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                sfd.FileName = "";
-                //sfd.Filter = "Excel|*.xlsx";
+                sfd.Title = "Save File As";
+                sfd.FileName = "Untitled";
+                sfd.Filter = "Excel Files(*.xlsx)| *.xlsx";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     // USING OPENXML
