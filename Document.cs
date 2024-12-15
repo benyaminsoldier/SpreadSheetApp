@@ -66,7 +66,6 @@ namespace spreadsheetApp
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
-
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
         private void DisplayLayout(DataGridView sheet)
