@@ -132,7 +132,8 @@
             btn_backGroundCellFormat.ImageTransparentColor = Color.Magenta;
             btn_backGroundCellFormat.Name = "btn_backGroundCellFormat";
             btn_backGroundCellFormat.Size = new Size(29, 30);
-            btn_backGroundCellFormat.Text = "toolStripSplitButton1";
+            //     btn_backGroundCellFormat.Text = "toolStripSplitButton1";
+            btn_backGroundCellFormat.Text = "backGroundCellColor";
             btn_backGroundCellFormat.Click += BackGroundCellFormatBtn_Click;
             // 
             // toolStripSeparator4
