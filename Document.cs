@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data;
 using iTextSharp.text;
@@ -10,7 +10,7 @@ namespace spreadsheetApp
 {
     public partial class Document : Form
     {
-        public string FileName { get; set; } = "";
+        public string FileName { get; set; } = " ";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
         public string FilePath { get; set; }
@@ -57,8 +57,6 @@ namespace spreadsheetApp
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
-            //CurrentDataTable = CurrentDataTable.TransferDataToTable(fileToBeOpened, numOfRows, numOfColumns);
-            CurrentLayout = new Sheet(CurrentDataTable);
 
             /* Begin - Patricia */
             CurrentLayout.KeyDown += CurrentLayout_KeyDown; // to permit deleting values typed wrongly
@@ -73,95 +71,10 @@ namespace spreadsheetApp
             InitializeComponent();
 
             this.initialForm = initialForm; // Patricia
-
         }
-
-
-
-
-
-
 
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
-        private DataTable TransferDataToTable(SpreadsheetDocument openedFile)
-        {
-            DataTable tableToFill = new DataTable();
-            tableToFill = AddColumnHeaderToTable(tableToFill);
-
-            WorkbookPart workbookPart = openedFile.WorkbookPart;
-            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = workbookPart.Workbook.Sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().FirstOrDefault();
-
-            WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-
-            var rows = worksheetPart.Worksheet.Descendants<Row>();
-
-            foreach (Row row in rows)
-            {
-                DataRow dataRow = tableToFill.NewRow();
-                int columnIndex = 0;
-
-                foreach (Cell cell in row.Descendants<Cell>())
-                {
-                    string cellValue = GetCellValue(workbookPart, cell);
-                    if (columnIndex < tableToFill.Columns.Count)
-                    {
-                        dataRow[columnIndex] = cellValue;
-                    }
-                    columnIndex++;
-                }
-                tableToFill.Rows.Add(dataRow);
-            }
-            return tableToFill;
-        }
-
-
-        private DataTable AddColumnHeaderToTable(DataTable table)   // uncommented by Patricia to test
-        {
-            DataColumn Column;
-            string columnName = "";
-            for (int i = 1; i < NumOfColumns; i++)
-            {
-                if (i <= 26)
-                {
-                    // First 26 columns are just A-Z.
-                    columnName = $"{(char)(i + 64)}"; // 'A' is 65 in ASCII, so adding 64 to get A-Z.
-                    Column = new DataColumn(columnName);
-                }
-                else
-                {
-                    // For columns beyond Z (i.e., AA, AB, etc.)
-                    int quotient = (i - 1) / 26; // Calculate the "prefix" for double letters (A, B, etc.)
-                    int remainder = (i - 1) % 26 + 1; // Calculate the "suffix" for double letters (A-Z)
-                    // Combine the prefix and suffix to get AA, AB, etc.
-                    columnName = $"{(char)(quotient + 64)}{(char)(remainder + 64)}";
-                    Column = new DataColumn(columnName);
-                }
-                Column.DataType = typeof(string);
-                Column.AllowDBNull = true;
-                Column.DefaultValue = "";
-                Column.MaxLength = 255;
-                table.Columns.Add(Column);
-            }
-            return table;
-        }
-
-        private string GetCellValue(WorkbookPart workbookPart, Cell cell)
-        {
-            if (cell == null || cell.CellValue == null)
-                return string.Empty;
-
-            // If the cell contains a shared string, retrieve the value from the shared string table
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-            {
-                var sharedStringTable = workbookPart.SharedStringTablePart.SharedStringTable;
-                return sharedStringTable.ElementAt(int.Parse(cell.CellValue.InnerText)).InnerText;
-            }
-            else
-            {
-                return cell.CellValue.InnerText;
-            }
-        }
         private void DisplayLayout(DataGridView sheet)
         {
             Controls.Add(sheet);
@@ -208,69 +121,23 @@ namespace spreadsheetApp
                 }
             }
         }
-        //private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) // comented by Patricia
-        //{
-
-        //    using (SaveFileDialog sfd = new SaveFileDialog())
-        //    {
-        //        //sfd.FileName = "";
-        //        //sfd.Filter = "Excel|*.xlsx";
-        //        sfd.FileName = "Sheet.xlsx"; // Patricia - teste
-        //                                     //   sfd.Filter = "Excel Files (*.xlsx)|*.xlsx"; // Patricia - teste
-        //        sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf"; // Patricia teste
-
-        //        if (sfd.ShowDialog() == DialogResult.OK)
-        //        {
-        //            // USING OPENXML
-        //            using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
-        //            {
-        //                WorkbookPart workbookPart = doc.AddWorkbookPart();
-        //                workbookPart.Workbook = new Workbook();
-        //                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-        //                worksheetPart.Worksheet = new Worksheet(new SheetData());
-        //                Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
-        //                DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
-
-
-        //                sheets.Append(sheet);
-        //                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-        //                // Write DataTable rows
-        //                foreach (DataRow dataRow in this.CurrentDataTable.Rows)
-        //                {
-        //                    Row newRow = new Row();
-        //                    foreach (var item in dataRow.ItemArray)
-        //                    {
-        //                        Cell cell = new Cell
-        //                        {
-        //                            DataType = CellValues.String,
-        //                            CellValue = new CellValue(item.ToString())
-        //                        };
-        //                        newRow.AppendChild(cell);
-        //                    }
-        //                    sheetData.AppendChild(newRow);
-        //                }
-        //                workbookPart.Workbook.Save();
-        //            }
-        //        }
-        //    }
-        //}
-
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) // Patricia - SAVE AS
+        
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) // Giovanni & Patricia
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
              //   sfd.FileName = "Sheet.xlsx";
+                sfd.Title = "Save File As";
                 sfd.FileName = this.FileName;
                 sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     string extension = Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
-
+                    FilePath = sfd.FileName;
                     if (extension == ".xlsx")
                     {
-                        using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                        using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
                         {
                             WorkbookPart workbookPart = doc.AddWorkbookPart();
                             workbookPart.Workbook = new Workbook();
@@ -278,7 +145,6 @@ namespace spreadsheetApp
                             worksheetPart.Worksheet = new Worksheet(new SheetData());
                             Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
                             DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
-
                             sheets.Append(sheet);
                             SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
 
@@ -291,12 +157,13 @@ namespace spreadsheetApp
                                     Cell cell = new Cell
                                     {
                                         DataType = CellValues.String,
-                                        CellValue = new CellValue(item?.ToString() ?? string.Empty) // Make sure all cells be processed
+                                        CellValue = new CellValue(item.ToString())
                                     };
                                     newRow.AppendChild(cell);
                                 }
                                 sheetData.AppendChild(newRow);
                             }
+                            workbookPart.Workbook.Save();
                         }
                     }
                     else if (extension == ".csv")
@@ -360,6 +227,44 @@ namespace spreadsheetApp
                     {
                         MessageBox.Show("File format not supported", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+            }
+        }
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e) // Giovanni
+        {
+            if (string.IsNullOrEmpty(FilePath))
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+            }
+            else
+            {
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Create(FilePath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
+                {
+                    WorkbookPart workbookPart = doc.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+                    WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    worksheetPart.Worksheet = new Worksheet(new SheetData());
+                    Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                    sheets.Append(sheet);
+                    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                    // Write DataTable rows
+                    foreach (DataRow dataRow in this.CurrentDataTable.Rows)
+                    {
+                        Row newRow = new Row();
+                        foreach (var item in dataRow.ItemArray)
+                        {
+                            Cell cell = new Cell
+                            {
+                                DataType = CellValues.String,
+                                CellValue = new CellValue(item.ToString())
+                            };
+                            newRow.AppendChild(cell);
+                        }
+                        sheetData.AppendChild(newRow);
+                    }
+                    workbookPart.Workbook.Save();
                 }
             }
         }
@@ -571,22 +476,7 @@ namespace spreadsheetApp
             e.Handled = true;
         }
 
-        private void pasteBtn_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void copyBtn_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cutBtn_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CurrentLayout_SelectionChanged(object sender, EventArgs e)
+        private void CurrentLayout_SelectionChanged(object sender, EventArgs e) // Patricia
         {
             try
             {
