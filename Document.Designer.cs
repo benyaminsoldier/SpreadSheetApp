@@ -50,11 +50,14 @@
             menuBar = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
-            openToolStripMenuItem = new ToolStripMenuItem();
+            openToolStripMenuItem = new ToolStripMenuItem();        
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             printToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            closeToolStripMenuItem = new ToolStripMenuItem();
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnSheet = new Button();
             colorsPallette2 = new ColorsPallette();
@@ -192,6 +195,7 @@
             toolStripButton1.Name = "toolStripButton1";
             toolStripButton1.Size = new Size(37, 30);
             toolStripButton1.Text = "toolStripButton1";
+
             // 
             // avgMenuItem
             // 
@@ -210,7 +214,7 @@
             // menuBar
             // 
             menuBar.ImageScalingSize = new Size(24, 24);
-            menuBar.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuBar.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, toolStripMenuItem2 });
             menuBar.Location = new Point(0, 0);
             menuBar.Name = "menuBar";
             menuBar.Padding = new Padding(6, 1, 0, 1);
@@ -220,7 +224,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, closeToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -236,6 +240,13 @@
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.Size = new Size(180, 22);
             openToolStripMenuItem.Text = "Open";
+            //
+            // closeToolStripMenuItem
+            // 
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new Size(152, 26);
+            closeToolStripMenuItem.Text = "Close";
+            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
@@ -262,6 +273,17 @@
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             exitToolStripMenuItem.Size = new Size(180, 22);
             exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(14, 24);
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(224, 26);
             // 
             // flowLayoutPanel1
             // 
@@ -299,11 +321,13 @@
             // 
             // splitContainer1
             // 
+
             splitContainer1.Location = new Point(205, 251);
             splitContainer1.Margin = new Padding(2);
             splitContainer1.Name = "splitContainer1";
             splitContainer1.Size = new Size(158, 90);
             splitContainer1.SplitterDistance = 52;
+
             splitContainer1.SplitterWidth = 3;
             splitContainer1.TabIndex = 17;
             // 
@@ -322,6 +346,7 @@
             // 
             // Document
             // 
+
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(822, 337);
@@ -358,6 +383,7 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem closeToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private ToolStripMenuItem printToolStripMenuItem;
@@ -379,5 +405,8 @@
         private ToolStripDropDownButton toolStripButton1;
         private ToolStripMenuItem avgMenuItem;
         private ToolStripMenuItem sumMenuItem;
+        private ToolStripMenuItem toolStripMenuItem1;
+  //      private ToolStripMenuItem closeToolStripMenuItem1;
+        private ToolStripMenuItem toolStripMenuItem2;
     }
 }
