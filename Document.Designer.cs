@@ -116,6 +116,7 @@
             cutBtn.Name = "cutBtn";
             cutBtn.Size = new Size(34, 30);
             cutBtn.Text = "cutBtn";
+            cutBtn.Click += cutBtn_Click;
             // 
             // toolStripSeparator3
             // 

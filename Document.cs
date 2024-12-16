@@ -1,4 +1,7 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using System;
@@ -9,9 +12,11 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static spreadsheetApp.SheetCell;
 
 namespace spreadsheetApp
 {
@@ -262,99 +267,163 @@ namespace spreadsheetApp
 
         private void pasteBtn_Click(object sender, EventArgs e)
         {
-            if (CurrentLayout.SelectedCells.Count is int numberOfSelectedCells && numberOfSelectedCells > 0)
+            IDataObject clipboardDataObject = Clipboard.GetDataObject();
+
+            if (clipboardDataObject != null)
             {
-                if (numberOfSelectedCells > 1)
+                if (clipboardDataObject.GetDataPresent("SheetCellData"))
                 {
+                    SheetCell.DataCell cellData = clipboardDataObject.GetData("SheetCellData") as SheetCell.DataCell;
 
+                    if (cellData != null)
+                    {
+                        SheetCell selectedCell = CurrentLayout.SelectedCells[0] as SheetCell;
+                        selectedCell.Value = cellData.CellValue;
+                        selectedCell.BackGroundColor = cellData.BackGroundColor;
+                        selectedCell.ForeColor = cellData.ForeColor;
+                        selectedCell.Alignment = cellData.Alignment;
+
+                        CurrentLayout.InvalidateCell(selectedCell);
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Retrieved object is null. Check serialization1.");
+                    }
                 }
-                else
+                else if(clipboardDataObject.GetDataPresent("SheetCellDataSet"))
                 {
-                    //Only one cell selected
 
+                    SheetCell.DataCellSet cellDataSet = clipboardDataObject.GetData("SheetCellDataSet") as SheetCell.DataCellSet;
+                    if (cellDataSet != null)
+                    {
+                        List<SheetCell> cellsToBePasted = new List<SheetCell>();
+
+                        SheetCell selectedCell = CurrentLayout.SelectedCells[0] as SheetCell;
+
+                        int selectedRow = selectedCell.RowIndex;
+                        int selectedColumn = selectedCell.ColumnIndex;
+
+                        int lastRow  = selectedCell.RowIndex;
+                        int firstCol = selectedCell.ColumnIndex;
+
+                        for (int i = 0; i < cellDataSet.SelectedCells.Count; i++)
+                        {
+                            DataCell cellProps = cellDataSet.SelectedCells[i] as DataCell;
+
+
+                            SheetCell targetCell = CurrentLayout.Rows[selectedRow].Cells[selectedColumn] as SheetCell;
+                            
+                            
+
+                            if(cellProps.CellRow != lastRow)
+                            {
+                                targetCell.Value = cellProps.CellValue;
+                                targetCell.BackGroundColor = cellProps.BackGroundColor;
+                                targetCell.ForeColor = cellProps.ForeColor;
+                                targetCell.Alignment = cellProps.Alignment;
+                                selectedRow++;
+                                selectedColumn = firstCol;
+                                lastRow++;
+                            }
+                            else
+                            {
+                                targetCell.Value = cellProps.CellValue;
+                                targetCell.BackGroundColor = cellProps.BackGroundColor;
+                                targetCell.ForeColor = cellProps.ForeColor;
+                                targetCell.Alignment = cellProps.Alignment;
+                                selectedColumn++;
+                            }
+
+
+
+                            CurrentLayout.InvalidateCell(targetCell);
+                         
+                        }
+         
+
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Retrieved object is null. Check serialization1.");
+                    }
+                    
                 }
             }
+
+               
         }
+
+
 
         private void copyBtn_Click(object sender, EventArgs e)
         {
-
-
             if (CurrentLayout.SelectedCells.Count is int numberOfSelectedCells && numberOfSelectedCells > 0)
             {
                 if (numberOfSelectedCells > 1)
                 {
+                    DataCellSet dataCellSet = new DataCellSet();
 
+                    var selectedGridCells = CurrentLayout.SelectedCells;
+               
+
+                    for(int i = 0; i < selectedGridCells.Count; i++)
+                    {
+                        SheetCell selectedCell = selectedGridCells[i] as SheetCell;
+                        int cellRow = selectedCell.RowIndex;
+                        int cellCol = selectedCell.ColumnIndex;
+                        string cellValue = selectedCell.EditedFormattedValue.ToString();
+                        System.Drawing.Color backGroundColor = selectedCell.BackGroundColor;
+                        System.Drawing.Color foreColor = selectedCell.ForeColor;
+                        System.Drawing.StringAlignment alignment = selectedCell.Alignment;
+
+                        SheetCell.DataCell dataCell = new SheetCell.DataCell(cellRow, cellCol, cellValue, backGroundColor, foreColor, alignment);
+
+                        dataCellSet.SelectedCells.Add(dataCell);
+                        
+                    }
+
+                    System.Windows.Forms.DataObject dataObject = new System.Windows.Forms.DataObject("SheetCellDataSet", dataCellSet);
+
+                    if (dataObject != null)
+                    {
+                        Clipboard.Clear();
+                        Clipboard.SetDataObject(dataObject);
+                    }
                 }
                 else
                 {
                     //Only one cell selected
-
                     SheetCell selectedCell = CurrentLayout.SelectedCells[0] as SheetCell;
- 
-                    string cellValue = selectedCell.Value.ToString();
+                    int cellRow = selectedCell.RowIndex;
+                    int cellCol = selectedCell.ColumnIndex;
+                    string cellValue = selectedCell.EditedFormattedValue.ToString();
                     System.Drawing.Color backGroundColor = selectedCell.BackGroundColor;
                     System.Drawing.Color foreColor = selectedCell.ForeColor;
                     System.Drawing.StringAlignment alignment = selectedCell.Alignment;
 
-                    SheetCell.DataCell dataCell = new SheetCell.DataCell(cellValue, backGroundColor, foreColor, alignment);
-                    MessageBox.Show($"Cell Value: {dataCell.CellValue}\n" +
-                                        $"Background Color: {dataCell.BackGroundColor}\n" +
-                                        $"Foreground Color: {dataCell.ForeColor}\n" +
-                                        $"Alignment: {dataCell.Alignment}");
+                    SheetCell.DataCell dataCell = new SheetCell.DataCell(cellRow, cellCol,cellValue, backGroundColor, foreColor, alignment);
 
-                    
-                    DataObject cellData = new DataObject("SheetCellData", dataCell);
-
-                    SheetCell.DataCell retrievedCell = cellData.GetData("SheetCellData") as SheetCell.DataCell;
-
-                    if (retrievedCell != null)
+                    System.Windows.Forms.DataObject dataObject = new System.Windows.Forms.DataObject("SheetCellData", dataCell);
+                    if (dataObject != null)
                     {
-
-                        MessageBox.Show($"Cell Value: {retrievedCell.CellValue}\n" +
-                                        $"Background Color: {retrievedCell.BackGroundColor}\n" +
-                                        $"Foreground Color: {retrievedCell.ForeColor}\n" +
-                                        $"Alignment: {retrievedCell.Alignment}");
+                        Clipboard.Clear();
+                        Clipboard.SetDataObject(dataObject);
                     }
-                    else
-                    {
-                        MessageBox.Show("Retrieved object is null. Check serialization.");
-                    }
-                    /*
-                    Clipboard.SetDataObject(cellData, false);
-
-                    IDataObject retrievedData = Clipboard.GetDataObject();
-                    if (retrievedData != null && retrievedData.GetDataPresent("SheetCellData"))
-                    {
-                        try
-                        {
-                            var retrievedCell = (SheetCell)retrievedData.GetData("SheetCellData");
-
-                            if (retrievedCell != null)
-                            {
-                                MessageBox.Show($"Cell Value: {retrievedCell.Value}\n" +
-                                                $"Background Color: {retrievedCell.BackGroundColor}\n" +
-                                                $"Foreground Color: {retrievedCell.ForeColor}\n" +
-                                                $"Alignment: {retrievedCell.Alignment}");
-                            }
-                            else
-                            {
-                                MessageBox.Show("Retrieved object is null. Check serialization.");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error during clipboard retrieval: {ex.Message}");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Clipboard does not contain the expected data format.");
-                    }
-                    */
-
                 }
             }
+        }
+
+        private void cutBtn_Click(object sender, EventArgs e)
+        {
+            copyBtn_Click(sender, e);
+            SheetCell selectedCell = CurrentLayout.SelectedCells[0] as SheetCell;
+            selectedCell.BackGroundColor = System.Drawing.Color.White;
+            selectedCell.ForeColor = System.Drawing.SystemColors.InfoText;
+            selectedCell.Alignment = System.Drawing.StringAlignment.Far;
+            
+            CurrentLayout.InvalidateCell(selectedCell);
 
         }
     }
