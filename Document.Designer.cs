@@ -246,7 +246,6 @@
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             closeToolStripMenuItem.Size = new Size(152, 26);
             closeToolStripMenuItem.Text = "Close";
-            closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
