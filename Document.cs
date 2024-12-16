@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -144,7 +145,7 @@ namespace spreadsheetApp
                             {
                                 Cell cell = new Cell
                                 {
-                                  
+
                                     DataType = CellValues.String,
                                     CellValue = new CellValue(item.ToString())
                                 };
@@ -256,6 +257,104 @@ namespace spreadsheetApp
 
         private void sumMenuItem_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void pasteBtn_Click(object sender, EventArgs e)
+        {
+            if (CurrentLayout.SelectedCells.Count is int numberOfSelectedCells && numberOfSelectedCells > 0)
+            {
+                if (numberOfSelectedCells > 1)
+                {
+
+                }
+                else
+                {
+                    //Only one cell selected
+
+                }
+            }
+        }
+
+        private void copyBtn_Click(object sender, EventArgs e)
+        {
+
+
+            if (CurrentLayout.SelectedCells.Count is int numberOfSelectedCells && numberOfSelectedCells > 0)
+            {
+                if (numberOfSelectedCells > 1)
+                {
+
+                }
+                else
+                {
+                    //Only one cell selected
+
+                    SheetCell selectedCell = CurrentLayout.SelectedCells[0] as SheetCell;
+ 
+                    string cellValue = selectedCell.Value.ToString();
+                    System.Drawing.Color backGroundColor = selectedCell.BackGroundColor;
+                    System.Drawing.Color foreColor = selectedCell.ForeColor;
+                    System.Drawing.StringAlignment alignment = selectedCell.Alignment;
+
+                    SheetCell.DataCell dataCell = new SheetCell.DataCell(cellValue, backGroundColor, foreColor, alignment);
+                    MessageBox.Show($"Cell Value: {dataCell.CellValue}\n" +
+                                        $"Background Color: {dataCell.BackGroundColor}\n" +
+                                        $"Foreground Color: {dataCell.ForeColor}\n" +
+                                        $"Alignment: {dataCell.Alignment}");
+
+                    
+                    DataObject cellData = new DataObject("SheetCellData", dataCell);
+
+                    SheetCell.DataCell retrievedCell = cellData.GetData("SheetCellData") as SheetCell.DataCell;
+
+                    if (retrievedCell != null)
+                    {
+
+                        MessageBox.Show($"Cell Value: {retrievedCell.CellValue}\n" +
+                                        $"Background Color: {retrievedCell.BackGroundColor}\n" +
+                                        $"Foreground Color: {retrievedCell.ForeColor}\n" +
+                                        $"Alignment: {retrievedCell.Alignment}");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Retrieved object is null. Check serialization.");
+                    }
+                    /*
+                    Clipboard.SetDataObject(cellData, false);
+
+                    IDataObject retrievedData = Clipboard.GetDataObject();
+                    if (retrievedData != null && retrievedData.GetDataPresent("SheetCellData"))
+                    {
+                        try
+                        {
+                            var retrievedCell = (SheetCell)retrievedData.GetData("SheetCellData");
+
+                            if (retrievedCell != null)
+                            {
+                                MessageBox.Show($"Cell Value: {retrievedCell.Value}\n" +
+                                                $"Background Color: {retrievedCell.BackGroundColor}\n" +
+                                                $"Foreground Color: {retrievedCell.ForeColor}\n" +
+                                                $"Alignment: {retrievedCell.Alignment}");
+                            }
+                            else
+                            {
+                                MessageBox.Show("Retrieved object is null. Check serialization.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error during clipboard retrieval: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Clipboard does not contain the expected data format.");
+                    }
+                    */
+
+                }
+            }
 
         }
     }
