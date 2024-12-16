@@ -6,7 +6,8 @@ using System.Runtime.CompilerServices;
 
 namespace spreadsheetApp
 {
-    class SheetCell : DataGridViewTextBoxCell
+    [Serializable]
+    public class SheetCell : DataGridViewTextBoxCell
     {
         private Rectangle cellArea;
         public Rectangle CellArea
@@ -169,6 +170,31 @@ namespace spreadsheetApp
             clone.Alignment = Alignment;
             return clone;
         }
-        
+        [Serializable]
+        public class DataCell
+        {
+            public int CellRow {  get; set; }
+            public int CellColumn { get; set; }
+            public string CellValue { get; set; }
+            public System.Drawing.Color BackGroundColor { get; set; }
+            public System.Drawing.Color ForeColor { get; set; }
+            public System.Drawing.StringAlignment Alignment { get; set; }
+            public DataCell(int cellRow, int cellCol,string value, System.Drawing.Color backgroundColor, System.Drawing.Color foreColor, System.Drawing.StringAlignment alignment)
+            {
+                CellRow = cellRow;
+                CellColumn = cellCol;
+                CellValue = value;
+                BackGroundColor = backgroundColor;
+                ForeColor = foreColor;
+                Alignment = alignment;
+            }
+        }
+        [Serializable]
+        public class DataCellSet
+        {
+            public List<DataCell> SelectedCells { get; set; } = new List<DataCell> ();
+
+        }
+
     }
 }
