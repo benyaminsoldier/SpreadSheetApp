@@ -1,6 +1,11 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System.Xml.Linq;
+using System.IO;
+using System.Windows.Forms;
+using System;
+using System.Linq;
+
 
 namespace spreadsheetApp
 { 
@@ -13,7 +18,7 @@ namespace spreadsheetApp
         private Document.DocParams Params { get; set; } 
         public int NumOfRows { get; set; } = 0;
         public int NumOfCols { get; set; } = 0;
-        
+
         public SpreadsheetApp()
         {
             filePath = "";
@@ -28,7 +33,7 @@ namespace spreadsheetApp
             PopUpForm popup = new PopUpForm(Params); // to ask the user how many rows and columns and if he wants to name the sheet.
             if(popup.ShowDialog() == DialogResult.OK)
             {
-                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath);
+                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath); // "this" in the current instance of this class that will be used to control "closeToolStripMenuItem1_Click"
                 Files.Add(newDocument);
                 newDocument.Display();
                 documentsCount++;
@@ -54,10 +59,11 @@ namespace spreadsheetApp
                             SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
                             NumOfRows = worksheetPart.Worksheet.Descendants<Row>().Count();
                             Row FirstRow = worksheetPart.Worksheet.Descendants<Row>().FirstOrDefault();
-                            if (FirstRow != null) 
+                            if (FirstRow != null)
                             {
                                 NumOfCols = FirstRow.Descendants<Cell>().Count();
-                            } else
+                            }
+                            else
                             {
                                 NumOfCols = 0;
                             }
@@ -69,7 +75,7 @@ namespace spreadsheetApp
                             }
                             else
                             {
-                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols, filePath, doc);
+                                Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfCols, filePath, doc); 
                                 Files.Add(newOpenedDocument);
                                 newOpenedDocument.Display();
                             }
@@ -78,6 +84,7 @@ namespace spreadsheetApp
                 }
             }
         }
+        
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (Application.OpenForms.Count > 1) // if the other forms are open, we just hide the initial form.

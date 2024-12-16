@@ -51,10 +51,13 @@
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
+            closeToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             printToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripMenuItem();
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnSheet = new Button();
             splitContainer1 = new SplitContainer();
@@ -71,6 +74,7 @@
             // 
             toolBar.ImageScalingSize = new Size(24, 24);
             toolBar.Items.AddRange(new ToolStripItem[] { pasteBtn, toolStripSeparator1, copyBtn, toolStripSeparator2, cutBtn, toolStripSeparator3, btn_backGroundCellFormat, toolStripSeparator4, btn_fontColor, toolStripSeparator5, btn_leftAlign, btn_centerAlign, btn_rightAlign, toolStripSeparator6, toolStripButton1 });
+
             toolBar.Location = new Point(0, 33);
             toolBar.Name = "toolBar";
             toolBar.Padding = new Padding(0, 0, 3, 0);
@@ -114,6 +118,7 @@
             cutBtn.Image = Properties.Resources.cutIcon;
             cutBtn.ImageTransparentColor = Color.Magenta;
             cutBtn.Name = "cutBtn";
+
             cutBtn.Size = new Size(34, 30);
             cutBtn.Text = "cutBtn";
             cutBtn.Click += cutBtn_Click;
@@ -129,8 +134,10 @@
             btn_backGroundCellFormat.Image = Properties.Resources.backgroundColorIcon;
             btn_backGroundCellFormat.ImageTransparentColor = Color.Magenta;
             btn_backGroundCellFormat.Name = "btn_backGroundCellFormat";
+
             btn_backGroundCellFormat.Size = new Size(34, 30);
             btn_backGroundCellFormat.Text = "toolStripSplitButton1";
+
             btn_backGroundCellFormat.Click += BackGroundCellFormatBtn_Click;
             // 
             // toolStripSeparator4
@@ -145,6 +152,8 @@
             btn_fontColor.ImageTransparentColor = Color.Magenta;
             btn_fontColor.Name = "btn_fontColor";
             btn_fontColor.Size = new Size(34, 30);
+            btn_fontColor.Text = "FontColor";
+
             btn_fontColor.Click += btn_fontColor_Click;
             // 
             // toolStripSeparator5
@@ -159,6 +168,9 @@
             btn_leftAlign.ImageTransparentColor = Color.Magenta;
             btn_leftAlign.Name = "btn_leftAlign";
             btn_leftAlign.Size = new Size(34, 30);
+
+            btn_leftAlign.Text = "LeftAlign";
+
             btn_leftAlign.Click += btn_leftAlign_Click;
             // 
             // btn_centerAlign
@@ -167,8 +179,10 @@
             btn_centerAlign.Image = Properties.Resources.centerAlignIcon1;
             btn_centerAlign.ImageTransparentColor = Color.Magenta;
             btn_centerAlign.Name = "btn_centerAlign";
+
             btn_centerAlign.Size = new Size(34, 30);
             btn_centerAlign.Text = "toolStripButton1";
+
             btn_centerAlign.Click += btn_centerAlign_Click;
             // 
             // btn_rightAlign
@@ -178,8 +192,10 @@
             btn_rightAlign.ImageTransparentColor = Color.Magenta;
             btn_rightAlign.Name = "btn_rightAlign";
             btn_rightAlign.Padding = new Padding(1);
+
             btn_rightAlign.Size = new Size(34, 30);
             btn_rightAlign.Text = "toolStripButton2";
+
             btn_rightAlign.Click += btn_rightAlign_Click;
             // 
             // toolStripSeparator6
@@ -194,27 +210,33 @@
             toolStripButton1.Image = Properties.Resources.opsIcons1;
             toolStripButton1.ImageTransparentColor = Color.Magenta;
             toolStripButton1.Name = "toolStripButton1";
+
             toolStripButton1.Size = new Size(42, 30);
             toolStripButton1.Text = "toolStripButton1";
+
             // 
             // avgMenuItem
             // 
             avgMenuItem.Name = "avgMenuItem";
+
             avgMenuItem.Size = new Size(152, 34);
+
             avgMenuItem.Text = "AVG";
             avgMenuItem.Click += avgMenuItem_Click;
             // 
             // sumMenuItem
             // 
             sumMenuItem.Name = "sumMenuItem";
+
             sumMenuItem.Size = new Size(152, 34);
+
             sumMenuItem.Text = "SUM";
             sumMenuItem.Click += sumMenuItem_Click;
             // 
             // menuBar
             // 
             menuBar.ImageScalingSize = new Size(24, 24);
-            menuBar.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuBar.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, toolStripMenuItem2 });
             menuBar.Location = new Point(0, 0);
             menuBar.Name = "menuBar";
             menuBar.Padding = new Padding(9, 2, 0, 2);
@@ -224,34 +246,49 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, closeToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, printToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+
             fileToolStripMenuItem.Size = new Size(54, 29);
+
             fileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
+
             newToolStripMenuItem.Size = new Size(188, 34);
+
             newToolStripMenuItem.Text = "New";
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
+
             openToolStripMenuItem.Size = new Size(188, 34);
+
             openToolStripMenuItem.Text = "Open";
+            // 
+            // closeToolStripMenuItem
+            // 
+            closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            closeToolStripMenuItem.Size = new Size(152, 26);
+            closeToolStripMenuItem.Text = "Close";
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+
             saveToolStripMenuItem.Size = new Size(188, 34);
+
             saveToolStripMenuItem.Text = "Save";
-            saveToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
+            saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.Size = new Size(188, 34);
+
             saveAsToolStripMenuItem.Text = "Save As...";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
@@ -259,31 +296,49 @@
             // 
             printToolStripMenuItem.Name = "printToolStripMenuItem";
             printToolStripMenuItem.Size = new Size(188, 34);
+
             printToolStripMenuItem.Text = "Print";
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+
             exitToolStripMenuItem.Size = new Size(188, 34);
+
             exitToolStripMenuItem.Text = "Exit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(14, 24);
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(224, 26);
             // 
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.Controls.Add(btnSheet);
             flowLayoutPanel1.Dock = DockStyle.Bottom;
+
             flowLayoutPanel1.Location = new Point(0, 504);
             flowLayoutPanel1.Margin = new Padding(4, 3, 4, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(1174, 58);
+
             flowLayoutPanel1.TabIndex = 15;
             // 
             // btnSheet
             // 
             btnSheet.AutoSize = true;
+
             btnSheet.Location = new Point(4, 3);
             btnSheet.Margin = new Padding(4, 3, 4, 3);
             btnSheet.Name = "btnSheet";
             btnSheet.Size = new Size(186, 58);
+
             btnSheet.TabIndex = 4;
             btnSheet.Text = "Sheet 1";
             btnSheet.UseVisualStyleBackColor = true;
@@ -301,6 +356,7 @@
             colorsPallette2.BackColor = SystemColors.ControlLightLight;
             colorsPallette2.Colors = (List<Color>)resources.GetObject("colorsPallette2.Colors");
             colorsPallette2.CurrentColor = Color.Empty;
+
             colorsPallette2.Location = new Point(133, 67);
             colorsPallette2.Margin = new Padding(0);
             colorsPallette2.Name = "colorsPallette2";
@@ -309,11 +365,23 @@
             colorsPallette2.TabIndex = 16;
             colorsPallette2.Visible = false;
             // 
+            // splitContainer1
+            // 
+            splitContainer1.Location = new Point(234, 335);
+            splitContainer1.Margin = new Padding(2, 3, 2, 3);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Size = new Size(181, 120);
+            splitContainer1.SplitterDistance = 59;
+            splitContainer1.SplitterWidth = 3;
+            splitContainer1.TabIndex = 17;
+            // 
+
             // colorsPallette1
             // 
             colorsPallette1.BackColor = SystemColors.ControlLightLight;
             colorsPallette1.Colors = (List<Color>)resources.GetObject("colorsPallette1.Colors");
             colorsPallette1.CurrentColor = Color.Empty;
+
             colorsPallette1.Location = new Point(171, 67);
             colorsPallette1.Margin = new Padding(0);
             colorsPallette1.Name = "colorsPallette1";
@@ -324,6 +392,7 @@
             // 
             // Document
             // 
+
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1174, 562);
@@ -333,7 +402,9 @@
             Controls.Add(flowLayoutPanel1);
             Controls.Add(toolBar);
             Controls.Add(menuBar);
+
             Margin = new Padding(4, 3, 4, 3);
+
             Name = "Document";
             Text = "Untitled";
             Load += Document_Load;
@@ -360,6 +431,7 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem closeToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private ToolStripMenuItem printToolStripMenuItem;
@@ -379,7 +451,13 @@
         private ToolStripDropDownButton toolStripButton1;
         private ToolStripMenuItem avgMenuItem;
         private ToolStripMenuItem sumMenuItem;
+
         private ColorsPallette colorsPallette2;
         private ColorsPallette colorsPallette1;
+
+        private ToolStripMenuItem toolStripMenuItem1;
+  //      private ToolStripMenuItem closeToolStripMenuItem1;
+        private ToolStripMenuItem toolStripMenuItem2;
+
     }
 }

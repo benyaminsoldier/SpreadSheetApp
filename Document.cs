@@ -3,11 +3,6 @@ using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Vml.Spreadsheet;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
@@ -17,12 +12,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static spreadsheetApp.SheetCell;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+
 
 namespace spreadsheetApp
 {
     public partial class Document : Form
     {
-        public string FileName { get; set; } = "";
+        public string FileName { get; set; } = " ";
         public int NumOfRows { get; set; }
         public int NumOfColumns { get; set; }
         public string FilePath { get; set; }
@@ -48,6 +46,7 @@ namespace spreadsheetApp
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
+        
         public Document(string name, int numOfRows, int numOfColumns, string filePath, SpreadsheetDocument fileToBeOpened)
         {
             FileName = name;
@@ -57,21 +56,13 @@ namespace spreadsheetApp
             OriginDate = DateTime.Now;
             LastModificationDate = DateTime.Now;
             CurrentDataTable = new DataSource(fileToBeOpened, numOfRows, numOfColumns);
-            Console.WriteLine($"Rows: {CurrentDataTable.Rows.Count}, Columns: {CurrentDataTable.Columns.Count}");
-            foreach (DataRow row in CurrentDataTable.Rows)
-            {
-                foreach (var item in row.ItemArray)
-                {
-                    Console.Write($"{item}  ");
-                }
-                Console.WriteLine();
-            }
             CurrentLayout = new Sheet(CurrentDataTable);
             DataTables = new List<DataTable>() { CurrentDataTable };
             Layouts = new List<DataGridView>() { CurrentLayout };
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
+
         // ---------------------------------------------- DATA LOGIC BUSINESS LOGIC DATATABLE VIRTUAL SHEET ----------------------------------------
 
         private void DisplayLayout(DataGridView sheet)
@@ -120,46 +111,156 @@ namespace spreadsheetApp
                 }
             }
         }
+        
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
                 sfd.Title = "Save File As";
-                sfd.FileName = "Untitled";
-                sfd.Filter = "Excel Files(*.xlsx)| *.xlsx";
+                sfd.FileName = this.FileName;
+                sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf";
+
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // USING OPENXML
-                    using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                    string extension = Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
+                    FilePath = sfd.FileName;
+                    if (extension == ".xlsx")
                     {
-                        WorkbookPart workbookPart = doc.AddWorkbookPart();
-                        workbookPart.Workbook = new Workbook();
-                        WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                        worksheetPart.Worksheet = new Worksheet(new SheetData());
-                        Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
-                        DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
-                        sheets.Append(sheet);
-                        SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-                        // Write DataTable rows
-                        foreach (DataRow dataRow in this.CurrentDataTable.Rows)
+                        using (SpreadsheetDocument doc = SpreadsheetDocument.Create(sfd.FileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
                         {
-                            Row newRow = new Row();
-                            foreach (var item in dataRow.ItemArray)
+                            WorkbookPart workbookPart = doc.AddWorkbookPart();
+                            workbookPart.Workbook = new Workbook();
+                            WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                            worksheetPart.Worksheet = new Worksheet(new SheetData());
+                            Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                            DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                            sheets.Append(sheet);
+                            SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                            // Write DataTable rows
+                            foreach (DataRow dataRow in this.CurrentDataTable.Rows)
                             {
-                                Cell cell = new Cell
+                                Row newRow = new Row();
+                                foreach (var item in dataRow.ItemArray)
                                 {
+                                    Cell cell = new Cell
+                                    {
+                                        DataType = CellValues.String,
+                                        CellValue = new CellValue(item.ToString())
+                                    };
+                                    newRow.AppendChild(cell);
+                                }
+                                sheetData.AppendChild(newRow);
+                            }
+                            workbookPart.Workbook.Save();
+                        }
+                    }
+                    else if (extension == ".csv")
+                    {
+                        using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                        {
+                          //  var columnNames = CurrentDataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+                          //  sw.WriteLine(string.Join(",", columnNames));
+
+                            // Write data of rows
+                            foreach (DataRow row in CurrentDataTable.Rows)
+                            {
+                                var fields = row.ItemArray.Select(field => field?.ToString()?.Replace(",", "\"\"") ?? string.Empty); // Check commas and null values
+                                sw.WriteLine(string.Join(",", fields));
+                            }
+                        }
+                    }
+                    else if (extension == ".pdf")
+                    {
+                        using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            iTextSharp.text.Document pdfDoc = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4);
+                            PdfWriter writer = PdfWriter.GetInstance(pdfDoc, fs);
+
+                            pdfDoc.Open();
+                            PdfPTable table = new PdfPTable(CurrentDataTable.Columns.Count)
+                            {
+                                WidthPercentage = 100, // Adjust table to page size
+                                SpacingBefore = 10f,
+                                SpacingAfter = 10f
+                            };
+
+                            // Add header of columns
+                            foreach (DataColumn column in CurrentDataTable.Columns)
+                            {
+                                PdfPCell headerCell = new PdfPCell(new iTextSharp.text.Phrase(column.ColumnName))
+                                {
+
 
                                     DataType = CellValues.String,
                                     CellValue = new CellValue(item.ToString())
+
+                                    HorizontalAlignment = Element.ALIGN_CENTER,
+                                    BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY
+
                                 };
-                                newRow.AppendChild(cell);
+                                table.AddCell(headerCell);
                             }
-                            sheetData.AppendChild(newRow);
+
+                            // Add data of cells
+                            foreach (DataRow row in CurrentDataTable.Rows)
+                            {
+                                for (int colIndex = 0; colIndex < CurrentDataTable.Columns.Count; colIndex++)
+                                {
+                                    // Verifiy cell value or substitute for empty value
+                                    string cellValue = row[colIndex]?.ToString() ?? " ";
+                                    table.AddCell(new iTextSharp.text.Phrase(cellValue));
+                                }
+                            }
+
+                            pdfDoc.Add(table);
+                            pdfDoc.Close();
                         }
-                        workbookPart.Workbook.Save();
+
                     }
+                    else
+                    {
+                        MessageBox.Show("File format not supported", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(FilePath))
+            {
+                saveAsToolStripMenuItem_Click(sender, e);
+            }
+            else
+            {
+                using (SpreadsheetDocument doc = SpreadsheetDocument.Create(FilePath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook)) // USING OPENXML
+                {
+                    WorkbookPart workbookPart = doc.AddWorkbookPart();
+                    workbookPart.Workbook = new Workbook();
+                    WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                    worksheetPart.Worksheet = new Worksheet(new SheetData());
+                    Sheets sheets = doc.WorkbookPart.Workbook.AppendChild(new Sheets());
+                    DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = doc.WorkbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Sheet1" };
+                    sheets.Append(sheet);
+                    SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                    // Write DataTable rows
+                    foreach (DataRow dataRow in this.CurrentDataTable.Rows)
+                    {
+                        Row newRow = new Row();
+                        foreach (var item in dataRow.ItemArray)
+                        {
+                            Cell cell = new Cell
+                            {
+                                DataType = CellValues.String,
+                                CellValue = new CellValue(item.ToString())
+                            };
+                            newRow.AppendChild(cell);
+                        }
+                        sheetData.AppendChild(newRow);
+                    }
+                    workbookPart.Workbook.Save();
                 }
             }
         }
@@ -185,7 +286,7 @@ namespace spreadsheetApp
             }
             private string validateTitle(string title)
             {
-                if (string.IsNullOrEmpty(title)) throw new Exception("Invalid document's title");
+                if (string.IsNullOrEmpty(title)) throw new Exception("Invalid document title");
                 return title;
             }
             private int validateRows(int rows)
@@ -255,14 +356,63 @@ namespace spreadsheetApp
             }
         }
 
-        private void avgMenuItem_Click(object sender, EventArgs e)
+        private void avgMenuItem_Click(object sender, EventArgs e) // Patricia
         {
+            try
+            {
+                var selectedCells = CurrentLayout.SelectedCells.Cast<DataGridViewCell>();
 
+                var numericValues = selectedCells
+                    .Where(cell => double.TryParse(cell.Value?.ToString(), out _))
+                    .Select(cell => double.Parse(cell.Value.ToString()));
+
+                if (!numericValues.Any())
+                {
+                    MessageBox.Show("No numeric value was selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Calculate average
+                double average = numericValues.Average();
+
+                MessageBox.Show($"Average: {average}", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in calculating the average: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void sumMenuItem_Click(object sender, EventArgs e)
+        private void sumMenuItem_Click(object sender, EventArgs e) // Patricia
         {
+            try
+            {
+                var selectedCells = CurrentLayout.SelectedCells.Cast<DataGridViewCell>();
 
+                var numericValues = selectedCells
+                    .Where(cell => double.TryParse(cell.Value?.ToString(), out _))
+                    .Select(cell => double.Parse(cell.Value.ToString()));
+
+                if (!numericValues.Any())
+                {
+                    MessageBox.Show("No numeric value was selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Calculate summation
+                double sum = numericValues.Sum();
+
+                MessageBox.Show($"Summation: {sum}", "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error in calculating the summation: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) // Patricia - close application
+        {
+            Application.Exit();
         }
 
         private void pasteBtn_Click(object sender, EventArgs e)
