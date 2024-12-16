@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Net.Mail;
 
 
 namespace spreadsheetApp
@@ -261,7 +260,6 @@ namespace spreadsheetApp
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
              //   sfd.FileName = "Sheet.xlsx";
-                sfd.FileName = this.FileName;
                 sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
