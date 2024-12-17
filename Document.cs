@@ -119,7 +119,6 @@ namespace spreadsheetApp
                 sfd.Title = "Save File As";
                 sfd.FileName = this.FileName;
                 sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf";
-
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     string extension = System.IO.Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
@@ -190,14 +189,8 @@ namespace spreadsheetApp
                             {
                                 PdfPCell headerCell = new PdfPCell(new iTextSharp.text.Phrase(column.ColumnName))
                                 {
-
-
-                                    DataType = CellValues.String,
-                                    CellValue = new CellValue(item.ToString()),
-
                                     HorizontalAlignment = Element.ALIGN_CENTER,
                                     BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY
-
                                 };
                                 table.AddCell(headerCell);
                             }

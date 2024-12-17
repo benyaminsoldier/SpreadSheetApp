@@ -33,8 +33,7 @@ namespace spreadsheetApp
             PopUpForm popup = new PopUpForm(Params); // to ask the user how many rows and columns and if he wants to name the sheet.
             if(popup.ShowDialog() == DialogResult.OK)
             {
-                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath); // "this" in the current instance of this class that will be used to control "closeToolStripMenuItem1_Click"
-                Files.Add(newDocument);
+                Document newDocument = new Document(Params.Title, Params.Rows, Params.Columns, filePath);
                 newDocument.Display();
                 documentsCount++;
             }            
@@ -48,6 +47,7 @@ namespace spreadsheetApp
                     ofd.Title = "Open File";
                     ofd.FileName = "";
                     ofd.Filter = "Excel Files (*.xlsx)|*.xlsx";
+                    filePath = ofd.FileName;
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         // USING OPENXML
