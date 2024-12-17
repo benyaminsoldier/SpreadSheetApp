@@ -122,7 +122,7 @@ namespace spreadsheetApp
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    string extension = Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
+                    string extension = System.IO.Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
                     FilePath = sfd.FileName;
                     if (extension == ".xlsx")
                     {
@@ -193,7 +193,7 @@ namespace spreadsheetApp
 
 
                                     DataType = CellValues.String,
-                                    CellValue = new CellValue(item.ToString())
+                                    CellValue = new CellValue(item.ToString()),
 
                                     HorizontalAlignment = Element.ALIGN_CENTER,
                                     BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY
