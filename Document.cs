@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using static spreadsheetApp.SheetCell;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Path = System.IO.Path;
 
 
 namespace spreadsheetApp
@@ -46,7 +47,7 @@ namespace spreadsheetApp
             DisplayLayout(CurrentLayout);
             InitializeComponent();
         }
-        
+
         public Document(string name, int numOfRows, int numOfColumns, string filePath, SpreadsheetDocument fileToBeOpened)
         {
             FileName = name;
@@ -111,7 +112,7 @@ namespace spreadsheetApp
                 }
             }
         }
-        
+
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
@@ -119,10 +120,9 @@ namespace spreadsheetApp
                 sfd.Title = "Save File As";
                 sfd.FileName = this.FileName;
                 sfd.Filter = "Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|PDF Files (*.pdf)|*.pdf";
-
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    string extension = Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
+                    string extension = System.IO.Path.GetExtension(sfd.FileName).ToLower(); // Get file extension
                     FilePath = sfd.FileName;
                     if (extension == ".xlsx")
                     {
@@ -159,8 +159,8 @@ namespace spreadsheetApp
                     {
                         using (StreamWriter sw = new StreamWriter(sfd.FileName))
                         {
-                          //  var columnNames = CurrentDataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
-                          //  sw.WriteLine(string.Join(",", columnNames));
+                            //  var columnNames = CurrentDataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+                            //  sw.WriteLine(string.Join(",", columnNames));
 
                             // Write data of rows
                             foreach (DataRow row in CurrentDataTable.Rows)
@@ -190,14 +190,8 @@ namespace spreadsheetApp
                             {
                                 PdfPCell headerCell = new PdfPCell(new iTextSharp.text.Phrase(column.ColumnName))
                                 {
-
-
-                                    DataType = CellValues.String,
-                                    CellValue = new CellValue(item.ToString())
-
                                     HorizontalAlignment = Element.ALIGN_CENTER,
                                     BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY
-
                                 };
                                 table.AddCell(headerCell);
                             }
@@ -225,7 +219,7 @@ namespace spreadsheetApp
                 }
             }
         }
-        
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(FilePath))
@@ -412,6 +406,7 @@ namespace spreadsheetApp
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) // Patricia - close application
         {
+            this.Close();
             Application.Exit();
         }
 
@@ -441,7 +436,7 @@ namespace spreadsheetApp
                         MessageBox.Show("Retrieved object is null. Check serialization1.");
                     }
                 }
-                else if(clipboardDataObject.GetDataPresent("SheetCellDataSet"))
+                else if (clipboardDataObject.GetDataPresent("SheetCellDataSet"))
                 {
 
                     SheetCell.DataCellSet cellDataSet = clipboardDataObject.GetData("SheetCellDataSet") as SheetCell.DataCellSet;
@@ -454,7 +449,7 @@ namespace spreadsheetApp
                         int selectedRow = selectedCell.RowIndex;
                         int selectedColumn = selectedCell.ColumnIndex;
 
-                        int lastRow  = selectedCell.RowIndex;
+                        int lastRow = selectedCell.RowIndex;
                         int firstCol = selectedCell.ColumnIndex;
 
                         for (int i = 0; i < cellDataSet.SelectedCells.Count; i++)
@@ -463,10 +458,10 @@ namespace spreadsheetApp
 
 
                             SheetCell targetCell = CurrentLayout.Rows[selectedRow].Cells[selectedColumn] as SheetCell;
-                            
-                            
 
-                            if(cellProps.CellRow != lastRow)
+
+
+                            if (cellProps.CellRow != lastRow)
                             {
                                 targetCell.Value = cellProps.CellValue;
                                 targetCell.BackGroundColor = cellProps.BackGroundColor;
@@ -484,29 +479,20 @@ namespace spreadsheetApp
                                 targetCell.Alignment = cellProps.Alignment;
                                 selectedColumn++;
                             }
-
-
-
                             CurrentLayout.InvalidateCell(targetCell);
-                         
+
                         }
-         
-
-
                     }
                     else
                     {
                         MessageBox.Show("Retrieved object is null. Check serialization1.");
                     }
-                    
+
                 }
             }
 
-               
+
         }
-
-
-
         private void copyBtn_Click(object sender, EventArgs e)
         {
             if (CurrentLayout.SelectedCells.Count is int numberOfSelectedCells && numberOfSelectedCells > 0)
@@ -516,9 +502,9 @@ namespace spreadsheetApp
                     DataCellSet dataCellSet = new DataCellSet();
 
                     var selectedGridCells = CurrentLayout.SelectedCells;
-               
 
-                    for(int i = 0; i < selectedGridCells.Count; i++)
+
+                    for (int i = 0; i < selectedGridCells.Count; i++)
                     {
                         SheetCell selectedCell = selectedGridCells[i] as SheetCell;
                         int cellRow = selectedCell.RowIndex;
@@ -531,7 +517,7 @@ namespace spreadsheetApp
                         SheetCell.DataCell dataCell = new SheetCell.DataCell(cellRow, cellCol, cellValue, backGroundColor, foreColor, alignment);
 
                         dataCellSet.SelectedCells.Add(dataCell);
-                        
+
                     }
 
                     System.Windows.Forms.DataObject dataObject = new System.Windows.Forms.DataObject("SheetCellDataSet", dataCellSet);
@@ -553,7 +539,7 @@ namespace spreadsheetApp
                     System.Drawing.Color foreColor = selectedCell.ForeColor;
                     System.Drawing.StringAlignment alignment = selectedCell.Alignment;
 
-                    SheetCell.DataCell dataCell = new SheetCell.DataCell(cellRow, cellCol,cellValue, backGroundColor, foreColor, alignment);
+                    SheetCell.DataCell dataCell = new SheetCell.DataCell(cellRow, cellCol, cellValue, backGroundColor, foreColor, alignment);
 
                     System.Windows.Forms.DataObject dataObject = new System.Windows.Forms.DataObject("SheetCellData", dataCell);
                     if (dataObject != null)
@@ -572,9 +558,61 @@ namespace spreadsheetApp
             selectedCell.BackGroundColor = System.Drawing.Color.White;
             selectedCell.ForeColor = System.Drawing.SystemColors.InfoText;
             selectedCell.Alignment = System.Drawing.StringAlignment.Far;
-            
+            selectedCell.Value = String.Empty;
             CurrentLayout.InvalidateCell(selectedCell);
 
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            closeToolStripMenuItem_Click((object)sender, e);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Title = "Open File";
+                ofd.FileName = "";
+                ofd.Filter = "Excel Files (*.xlsx)|*.xlsx";
+                //filePath = ofd.FileName;
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    // USING OPENXML
+                    using (SpreadsheetDocument doc = SpreadsheetDocument.Open(ofd.FileName, false))
+                    {
+                        WorkbookPart workbookPart = doc.WorkbookPart;
+                        DocumentFormat.OpenXml.Spreadsheet.Sheet sheet1 = workbookPart.Workbook.Descendants<DocumentFormat.OpenXml.Spreadsheet.Sheet>().First();
+                        WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet1.Id);
+                        SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+                        NumOfRows = worksheetPart.Worksheet.Descendants<Row>().Count();
+                        Row FirstRow = worksheetPart.Worksheet.Descendants<Row>().FirstOrDefault();
+                        if (FirstRow != null)
+                        {
+                            NumOfColumns = FirstRow.Descendants<Cell>().Count();
+                        }
+                        else
+                        {
+                            NumOfColumns = 0;
+                        }
+                        if (NumOfColumns == 0 && NumOfRows == 0)
+                        {
+                            Document newOpenedDocument = new Document(ofd.FileName, 30, 10, FilePath);
+                            newOpenedDocument.Display();
+                        }
+                        else
+                        {
+                            Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfColumns, FilePath, doc);
+                            newOpenedDocument.Display();
+                        }
+                    }
+                }
+            }
         }
     }
 }
