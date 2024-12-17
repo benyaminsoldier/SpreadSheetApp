@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using static spreadsheetApp.SheetCell;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Path = System.IO.Path;
 
 
 namespace spreadsheetApp
@@ -565,7 +566,7 @@ namespace spreadsheetApp
             selectedCell.BackGroundColor = System.Drawing.Color.White;
             selectedCell.ForeColor = System.Drawing.SystemColors.InfoText;
             selectedCell.Alignment = System.Drawing.StringAlignment.Far;
-            
+            selectedCell.Value = String.Empty;
             CurrentLayout.InvalidateCell(selectedCell);
 
         }
