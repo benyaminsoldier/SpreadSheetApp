@@ -603,13 +603,11 @@ namespace spreadsheetApp
                         if (NumOfColumns == 0 && NumOfRows == 0)
                         {
                             Document newOpenedDocument = new Document(ofd.FileName, 30, 10, FilePath);
-                            //Files.Add(newOpenedDocument);
                             newOpenedDocument.Display();
                         }
                         else
                         {
                             Document newOpenedDocument = new Document(ofd.FileName, NumOfRows, NumOfColumns, FilePath, doc);
-                            //Files.Add(newOpenedDocument);
                             newOpenedDocument.Display();
                         }
                     }
